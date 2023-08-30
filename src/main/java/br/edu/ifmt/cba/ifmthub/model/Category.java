@@ -24,6 +24,13 @@ public class Category {
 	
 	public Category() {
 	}
+	
+	public Category(Long idCategory, String description, LocalDateTime dateCreated, boolean status) {
+		this.idCategory = idCategory;
+		this.description = description;
+		this.dateCreated = dateCreated;
+		this.status = status;
+	}
 
 	public Long getIdCategory() {
 		return idCategory;

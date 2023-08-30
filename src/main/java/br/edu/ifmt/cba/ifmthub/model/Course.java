@@ -28,6 +28,13 @@ public class Course {
 	
 	public Course() {
 	}
+	
+	public Course(Long idCourse, String description, LocalDateTime dateCreated, boolean status) {
+		this.idCourse = idCourse;
+		this.description = description;
+		this.dateCreated = dateCreated;
+		this.status = status;
+	}
 
 	public Long getIdCourse() {
 		return idCourse;
