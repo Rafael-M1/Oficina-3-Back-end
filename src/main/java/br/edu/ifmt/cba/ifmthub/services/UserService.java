@@ -1,5 +1,6 @@
 package br.edu.ifmt.cba.ifmthub.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,8 @@ public class UserService {
 	private UserRepository userRepository;
 
 	public User save(User user) {
+		user.setDateCreated(LocalDateTime.now());
+		user.setStatus(true);
 		return userRepository.save(user);
 	}
 

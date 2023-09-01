@@ -1,5 +1,6 @@
 package br.edu.ifmt.cba.ifmthub.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,8 @@ public class TagService {
 	private TagRepository tagRepository;
 
 	public Tag save(Tag tag) {
+		tag.setDateCreated(LocalDateTime.now());
+		tag.setStatus(true);
 		return tagRepository.save(tag);
 	}
 

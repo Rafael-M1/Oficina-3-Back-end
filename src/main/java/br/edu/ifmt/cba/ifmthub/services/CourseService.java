@@ -1,5 +1,6 @@
 package br.edu.ifmt.cba.ifmthub.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,8 @@ public class CourseService {
 	private CourseRepository courseRepository;
 
 	public Course save(Course course) {
+		course.setDateCreated(LocalDateTime.now());
+		course.setStatus(true);
 		return courseRepository.save(course);
 	}
 

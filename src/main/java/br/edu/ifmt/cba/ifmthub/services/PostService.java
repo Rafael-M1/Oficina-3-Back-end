@@ -1,5 +1,6 @@
 package br.edu.ifmt.cba.ifmthub.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,8 @@ public class PostService {
 	private PostRepository postRepository;
 
 	public Post save(Post post) {
+		post.setDateCreated(LocalDateTime.now());
+		post.setStatus(true);
 		return postRepository.save(post);
 	}
 

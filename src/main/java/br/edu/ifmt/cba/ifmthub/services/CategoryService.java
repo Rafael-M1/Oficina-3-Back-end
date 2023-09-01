@@ -1,5 +1,6 @@
 package br.edu.ifmt.cba.ifmthub.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,8 @@ public class CategoryService {
 	private CategoryRepository categoryRepository;
 
 	public Category save(Category category) {
+		category.setDateCreated(LocalDateTime.now());
+		category.setStatus(true);
 		return categoryRepository.save(category);
 	}
 
