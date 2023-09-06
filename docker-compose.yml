@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  ifmthub-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev # Escolha o perfil desejado aqui: dev ou test
+      - DATABASE_URL=jdbc:postgresql://host.docker.internal:5432/postgres # Altere para o ip do postgresql
+      - DATABASE_USERNAME=postgres
+      - DATABASE_PASSWORD=123456
+    ports:
+      - "8080:8080"
