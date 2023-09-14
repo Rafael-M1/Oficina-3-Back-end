@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 public class PostInsertDTO {
-	@NotBlank
+	@NotNull(message = "Author ID must not be empty")
 	private Long idAuthor;
 	@NotNull
 	private CategoryDTO category;
