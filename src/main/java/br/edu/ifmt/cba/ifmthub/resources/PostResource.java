@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.edu.ifmt.cba.ifmthub.model.Post;
 import br.edu.ifmt.cba.ifmthub.model.dto.PostInsertDTO;
 import br.edu.ifmt.cba.ifmthub.services.PostService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/post")
@@ -24,7 +25,7 @@ public class PostResource {
 	private PostService postService;
 	
 	@PostMapping
-	public ResponseEntity<Post> save(@RequestBody PostInsertDTO postInsertDTO) {
+	public ResponseEntity<Post> save(@RequestBody @Valid PostInsertDTO postInsertDTO) {
 		Post postSaved = this.postService.save(postInsertDTO);
 		return new ResponseEntity<Post>(postSaved, HttpStatus.CREATED);
 	}
