@@ -63,6 +63,7 @@ public class PostService {
 		post.setTitle(postInsertDTO.getTitle());
 		post.setContent(postInsertDTO.getContent());
 		post.setUrlImgPost(postInsertDTO.getUrlImgPost());
+		post.setDateCreated(LocalDateTime.now());
 		return postRepository.save(post);
 	}
 
