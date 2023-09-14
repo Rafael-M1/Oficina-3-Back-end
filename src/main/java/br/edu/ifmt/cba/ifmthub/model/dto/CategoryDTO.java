@@ -3,9 +3,11 @@ package br.edu.ifmt.cba.ifmthub.model.dto;
 import java.time.LocalDateTime;
 
 import br.edu.ifmt.cba.ifmthub.model.Category;
+import jakarta.validation.constraints.NotEmpty;
 
 public class CategoryDTO {
 	private Long idCategory;
+	@NotEmpty(message = "Category's description must not be empty")
 	private String description;
 	private LocalDateTime dateCreated;
 	private boolean status;
