@@ -51,6 +51,7 @@ public class User implements UserDetails, Serializable {
 	@Column(name = "url_img_profile")
 	private String urlImgProfile;
 	private boolean status;
+	private boolean isAccountConfirmed;
 	private String password;
 	private String email;
 	
@@ -149,6 +150,14 @@ public class User implements UserDetails, Serializable {
 	
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public boolean isAccountConfirmed() {
+		return isAccountConfirmed;
+	}
+
+	public void setAccountConfirmed(boolean isAccountConfirmed) {
+		this.isAccountConfirmed = isAccountConfirmed;
 	}
 
 	@Override

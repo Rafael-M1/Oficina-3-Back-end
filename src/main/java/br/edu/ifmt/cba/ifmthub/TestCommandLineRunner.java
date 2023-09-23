@@ -2,6 +2,7 @@ package br.edu.ifmt.cba.ifmthub;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Base64;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -21,6 +22,7 @@ import br.edu.ifmt.cba.ifmthub.services.CategoryService;
 import br.edu.ifmt.cba.ifmthub.services.CourseService;
 import br.edu.ifmt.cba.ifmthub.services.PostService;
 import br.edu.ifmt.cba.ifmthub.services.TagService;
+import br.edu.ifmt.cba.ifmthub.utils.EmailConfirmationEncryption;
 
 @Component
 @Profile("test")
@@ -79,5 +81,20 @@ public class TestCommandLineRunner implements CommandLineRunner {
 				"url da imagem do post", true);
 		post1.addTag(tagService.findById(1l), tagService.findById(2l));
 		postService.save(post1);
+		
+		/*
+		String sendgridApiKey = System.getenv("SENDGRID_API_KEY");
+		System.out.println(sendgridApiKey);
+		String email = "rafael@gmail.com";
+
+        // Criptografe o email com a chave fixa
+        String encryptedEmail = EmailConfirmationEncryption.encryptString(email);
+
+        // Descriptografe o email com a chave fixa
+        String decryptedEmail = EmailConfirmationEncryption.decryptString(encryptedEmail);
+
+        System.out.println("Email original: " + email);
+        System.out.println("Email criptografado: " + encryptedEmail);
+        System.out.println("Email descriptografado: " + decryptedEmail);*/
 	}
 }
