@@ -21,7 +21,7 @@ public class EmailConfirmationEncryption {
 	public static String decryptString(String encryptedEmail) throws Exception {
 		Cipher cipher = Cipher.getInstance("AES");
 		cipher.init(Cipher.DECRYPT_MODE, fixedSecretKey);
-		byte[] encryptedEmailBytes = Base64.getDecoder().decode(encryptedEmail);
+		byte[] encryptedEmailBytes = Base64.getDecoder().decode(encryptedEmail.getBytes(StandardCharsets.UTF_8));
 		byte[] decryptedEmailBytes = cipher.doFinal(encryptedEmailBytes);
 		return new String(decryptedEmailBytes, StandardCharsets.UTF_8);
 	}

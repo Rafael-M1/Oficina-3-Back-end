@@ -1,6 +1,10 @@
 package br.edu.ifmt.cba.ifmthub.resources;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +30,6 @@ import com.sendgrid.helpers.mail.objects.Email;
 import br.edu.ifmt.cba.ifmthub.configs.TokenService;
 import br.edu.ifmt.cba.ifmthub.model.Role;
 import br.edu.ifmt.cba.ifmthub.model.User;
-import br.edu.ifmt.cba.ifmthub.model.dto.LoginResponseDTO;
 import br.edu.ifmt.cba.ifmthub.model.dto.RegisterDTO;
 import br.edu.ifmt.cba.ifmthub.model.dto.UserDTO;
 import br.edu.ifmt.cba.ifmthub.repositories.RoleRepository;
@@ -53,11 +56,19 @@ public class AuthResource {
 	private PasswordEncoder passwordEncoder;
 
 	@PostMapping("/login")
-	public ResponseEntity<LoginResponseDTO> login(@RequestBody @Valid UserDTO data) {
+	public ResponseEntity<Map<String, Object>> login(@RequestBody @Valid UserDTO data) {
 		var usernamePassword = new UsernamePasswordAuthenticationToken(data.getEmail(), data.getPassword());
 		var auth = this.authenticationManager.authenticate(usernamePassword);
-		var token = tokenService.generateToken((User) auth.getPrincipal());
-		return ResponseEntity.ok(new LoginResponseDTO(token));
+		User user = (User) auth.getPrincipal();
+		Map<String, Object> response = new HashMap<>();
+		if (user.isAccountConfirmed()) {
+			var token = tokenService.generateToken(user);
+			response.put("token", token);
+			return ResponseEntity.ok(response);
+		} else {
+			response.put("message", "Account not confirmed");
+			return ResponseEntity.badRequest().body(response);
+		}
 	}
 
 	@Transactional
@@ -73,7 +84,7 @@ public class AuthResource {
 		newUser.setDateCreated(LocalDateTime.now());
 		newUser.setEmail(data.getEmail());
 		newUser.setFullName(data.getFullName());
-		newUser.setGender('M');
+		newUser.setGender(data.getGender());
 		newUser.setStatus(true);
 		newUser.setAccountConfirmed(false);
 		newUser.setUrlImgProfile(data.getUrlImgProfile());
@@ -85,19 +96,21 @@ public class AuthResource {
 	}
 
 	@GetMapping("/confirm")
-	public ResponseEntity<String> confirmAccount(@RequestParam String token) {
+	public ResponseEntity<Map<String, Object>> confirmAccount(@RequestParam String token) {
 		try {
 			String decryptedEmail = EmailConfirmationEncryption.decryptString(token);
 			User userFound = repository.findByEmail(decryptedEmail);
-			if (userFound != null) {				
+			if (userFound != null) {
 				userFound.setAccountConfirmed(true);
 				repository.save(userFound);
-				return ResponseEntity.ok("Account confirmed:" + decryptedEmail);
+				Map<String, Object> response = new HashMap<>();
+				response.put("message", "Account confirmed");
+				return ResponseEntity.ok(response);
 			}
-			return ResponseEntity.badRequest().body("Invalid link.");
+			return ResponseEntity.badRequest().body(Map.of("message", "Invalid link."));
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.badRequest().body(e.getMessage());
+			return ResponseEntity.badRequest().body(Map.of("message", "Invalid link."));
 		}
 
 	}
@@ -106,8 +119,8 @@ public class AuthResource {
 		try {
 			String confirmationToken = EmailConfirmationEncryption.encryptString(newUser.getEmail());
 			String host = "http://localhost:8080/";
-			String link = host + "auth/confirm?token=" + confirmationToken;
-
+			String link = host + "auth/confirm?token="
+					+ URLEncoder.encode(confirmationToken, StandardCharsets.UTF_8.toString());
 			String htmlContent = "<p>Ol&aacute;,&nbsp;" + newUser.getFullName() + "!</p>" + "<p>&nbsp;</p>"
 					+ "<p>Sua conta no IFMT Hub est&aacute; quase pronta. Para ativ&aacute;-la, por favor confirme o seu endere&ccedil;o de email clicando no link abaixo.</p>"
 					+ "<p><a href=\"" + link + "\">" + link + "</a></p>" + "<p>&nbsp;</p>"
