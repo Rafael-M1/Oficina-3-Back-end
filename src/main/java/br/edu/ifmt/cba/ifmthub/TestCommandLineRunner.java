@@ -1,17 +1,21 @@
 package br.edu.ifmt.cba.ifmthub;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import br.edu.ifmt.cba.ifmthub.model.Category;
 import br.edu.ifmt.cba.ifmthub.model.Course;
 import br.edu.ifmt.cba.ifmthub.model.Post;
+import br.edu.ifmt.cba.ifmthub.model.Role;
 import br.edu.ifmt.cba.ifmthub.model.Tag;
 import br.edu.ifmt.cba.ifmthub.model.User;
+import br.edu.ifmt.cba.ifmthub.repositories.RoleRepository;
 import br.edu.ifmt.cba.ifmthub.repositories.UserRepository;
 import br.edu.ifmt.cba.ifmthub.services.CategoryService;
 import br.edu.ifmt.cba.ifmthub.services.CourseService;
@@ -35,7 +39,13 @@ public class TestCommandLineRunner implements CommandLineRunner {
 	private PostService postService;
 	
 	@Autowired
+	private RoleRepository roleRepository;
+	
+	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 	
 	@Override
 	public void run(String... args) throws Exception {
@@ -44,13 +54,21 @@ public class TestCommandLineRunner implements CommandLineRunner {
 		courseService.save(new Course(null, "Técnologo de Análise e Desenvolvimento de Sistemas", LocalDateTime.now(), true));
 		tagService.save(new Tag(null, "Tecnologia", LocalDateTime.now(), true));
 		tagService.save(new Tag(null, "História", LocalDateTime.now(), true));
+		roleRepository.save(new Role(null, "ROLE_ADMIN"));
+		roleRepository.save(new Role(null, "ROLE_STUDENT"));
 		
 		User user1 = new User();
 		user1.addCourse(course);
 		user1.setFullName("Rafael");
 		user1.setGender('M');
+		user1.setBirthDate(LocalDate.now());
 		user1.setDateCreated(LocalDateTime.now());
-		user1.setUrlImgProfile("url");
+		user1.setUrlImgProfile("https://img.freepik.com/vetores-gratis/ilustracao-em-desenho-animado-de-astronauta-super-flying_138676-3259.jpg");
+		user1.setEmail("rafael@gmail.com");
+		user1.setPassword(passwordEncoder.encode("123456"));
+		Role role1 = roleRepository.findByAuthority("ROLE_ADMIN");
+		Role role2 = roleRepository.findByAuthority("ROLE_STUDENT");
+		user1.addRole(role1, role2);
 		userRepository.save(user1);
 		
 		Category category = new Category(null, "Tecnologia da Informação", LocalDateTime.now(), true);

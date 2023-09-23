@@ -4,13 +4,16 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import br.edu.ifmt.cba.ifmthub.model.User;
 import br.edu.ifmt.cba.ifmthub.repositories.UserRepository;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 	@Autowired
 	private UserRepository userRepository;
 
@@ -40,5 +43,10 @@ public class UserService {
 
 	public void delete(Long idUser) {
 		userRepository.deleteById(idUser);
+	}
+
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		return userRepository.findByEmail(username);
 	}
 }
