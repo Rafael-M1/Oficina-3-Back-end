@@ -30,71 +30,78 @@ public class TestCommandLineRunner implements CommandLineRunner {
 
 	@Autowired
 	private TagService tagService;
-	
+
 	@Autowired
 	private CourseService courseService;
-	
+
 	@Autowired
 	private CategoryService categoryService;
 
 	@Autowired
 	private PostService postService;
-	
+
 	@Autowired
 	private RoleRepository roleRepository;
-	
+
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	@Autowired
 	private PasswordEncoder passwordEncoder;
-	
+
 	@Override
 	public void run(String... args) throws Exception {
 		Course course = new Course(null, "Técnologo de Sistemas para Internet", LocalDateTime.now(), true);
 		courseService.save(course);
-		courseService.save(new Course(null, "Técnologo de Análise e Desenvolvimento de Sistemas", LocalDateTime.now(), true));
+		courseService.save(
+				new Course(null, "Técnologo de Análise e Desenvolvimento de Sistemas", LocalDateTime.now(), true));
 		tagService.save(new Tag(null, "Tecnologia", LocalDateTime.now(), true));
 		tagService.save(new Tag(null, "História", LocalDateTime.now(), true));
 		roleRepository.save(new Role(null, "ROLE_ADMIN"));
 		roleRepository.save(new Role(null, "ROLE_STUDENT"));
-		
+		Role role1 = roleRepository.findByAuthority("ROLE_ADMIN");
+		Role role2 = roleRepository.findByAuthority("ROLE_STUDENT");
+
+		// Usuario com email confirmado
 		User user1 = new User();
 		user1.addCourse(course);
+		user1.setStatus(true);
+		user1.setAccountConfirmed(true);
 		user1.setFullName("Rafael");
 		user1.setGender('M');
 		user1.setBirthDate(LocalDate.now());
 		user1.setDateCreated(LocalDateTime.now());
-		user1.setUrlImgProfile("https://img.freepik.com/vetores-gratis/ilustracao-em-desenho-animado-de-astronauta-super-flying_138676-3259.jpg");
+		user1.setUrlImgProfile(
+				"https://img.freepik.com/vetores-gratis/ilustracao-em-desenho-animado-de-astronauta-super-flying_138676-3259.jpg");
 		user1.setEmail("rafael@gmail.com");
 		user1.setPassword(passwordEncoder.encode("123456"));
-		Role role1 = roleRepository.findByAuthority("ROLE_ADMIN");
-		Role role2 = roleRepository.findByAuthority("ROLE_STUDENT");
 		user1.addRole(role1, role2);
 		userRepository.save(user1);
-		
+
+		// Usuario sem email confirmado
+		User user2 = new User();
+		user2.addCourse(course);
+		user2.setStatus(true);
+		user2.setAccountConfirmed(false);
+		user2.setFullName("Maria");
+		user2.setGender('F');
+		user2.setBirthDate(LocalDate.now());
+		user2.setDateCreated(LocalDateTime.now());
+		user2.setUrlImgProfile(
+				"https://img.freepik.com/vetores-gratis/ilustracao-em-desenho-animado-de-astronauta-super-flying_138676-3259.jpg");
+		user2.setEmail("maria@gmail.com");
+		user2.setPassword(passwordEncoder.encode("123456"));
+		user2.addRole(role2);
+		userRepository.save(user2);
+
 		Category category = new Category(null, "Tecnologia da Informação", LocalDateTime.now(), true);
 		categoryService.save(category);
-		
-		Post post1 = new Post(null, user1, category, "Título do post",
-				"Conteudo do post", LocalDateTime.now(),
+
+		Post post1 = new Post(null, user1, category, "Título do post", "Conteudo do post", LocalDateTime.now(),
 				"url da imagem do post", true);
 		post1.addTag(tagService.findById(1l), tagService.findById(2l));
 		postService.save(post1);
-		
-		/*
-		String sendgridApiKey = System.getenv("SENDGRID_API_KEY");
-		System.out.println(sendgridApiKey);
-		String email = "rafael@gmail.com";
 
-        // Criptografe o email com a chave fixa
-        String encryptedEmail = EmailConfirmationEncryption.encryptString(email);
-
-        // Descriptografe o email com a chave fixa
-        String decryptedEmail = EmailConfirmationEncryption.decryptString(encryptedEmail);
-
-        System.out.println("Email original: " + email);
-        System.out.println("Email criptografado: " + encryptedEmail);
-        System.out.println("Email descriptografado: " + decryptedEmail);*/
+		//System.out.println("Email criptografado:" + EmailConfirmationEncryption.encryptString("maria@gmail.com"));
 	}
 }
