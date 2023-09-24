@@ -1,5 +1,6 @@
 package br.edu.ifmt.cba.ifmthub.resources;
 
+import java.net.InetAddress;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -122,7 +123,7 @@ public class AuthResource {
 	private void sendConfirmationEmail(User newUser) {
 		try {
 			String confirmationToken = EmailConfirmationEncryption.encryptString(newUser.getEmail());
-			String host = "http://localhost:8080/";
+			String host = "http://" + InetAddress.getLocalHost().getHostAddress();
 			String link = host + "auth/confirm?token="
 					+ URLEncoder.encode(confirmationToken, StandardCharsets.UTF_8.toString());
 			String htmlContent = "<p>Ol&aacute;,&nbsp;" + newUser.getFullName() + "!</p>" + "<p>&nbsp;</p>"
