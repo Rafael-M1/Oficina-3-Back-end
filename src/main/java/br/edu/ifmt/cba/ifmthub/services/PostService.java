@@ -61,6 +61,7 @@ public class PostService {
 			}
 		}
 		post.setTitle(postInsertDTO.getTitle());
+		post.setSubTitle(postInsertDTO.getSubtitle());
 		post.setContent(postInsertDTO.getContent());
 		post.setUrlImgPost(postInsertDTO.getUrlImgPost());
 		post.setDateCreated(LocalDateTime.now());
@@ -80,6 +81,7 @@ public class PostService {
 		postSaved.setAuthor(post.getAuthor());
 		postSaved.setCategory(post.getCategory());
 		postSaved.setTitle(post.getTitle());
+		postSaved.setSubTitle(post.getSubTitle());
 		postSaved.setContent(post.getContent());
 		postSaved.setUrlImgPost(post.getUrlImgPost());
 		postSaved.setStatus(post.isStatus());

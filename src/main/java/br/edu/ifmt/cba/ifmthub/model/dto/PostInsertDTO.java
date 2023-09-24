@@ -20,6 +20,8 @@ public class PostInsertDTO {
 	private List<TagDTO> tags = new ArrayList<>();
 	@NotBlank(message = "Title must not be empty")
 	private String title;
+	@NotBlank(message = "Subtitle must not be empty")
+	private String subtitle;
 	@NotBlank(message = "Content must not be empty")
 	private String content;
 	private String urlImgPost;
@@ -51,9 +53,13 @@ public class PostInsertDTO {
 		return urlImgPost;
 	}
 
+	public String getSubtitle() {
+		return subtitle;
+	}
+
 	@Override
 	public String toString() {
 		return "PostInsertDTO [idAuthor=" + idAuthor + ", category=" + category + ", tags=" + tags + ", title=" + title
-				+ ", content=" + content + ", urlImgPost=" + urlImgPost + "]";
+				+ ", subtitle=" + subtitle + ", content=" + content + ", urlImgPost=" + urlImgPost + "]";
 	}
 }

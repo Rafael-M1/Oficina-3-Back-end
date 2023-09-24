@@ -97,7 +97,7 @@ public class TestCommandLineRunner implements CommandLineRunner {
 		Category category = new Category(null, "Tecnologia da Informação", LocalDateTime.now(), true);
 		categoryService.save(category);
 
-		Post post1 = new Post(null, user1, category, "Título do post", "Conteudo do post", LocalDateTime.now(),
+		Post post1 = new Post(null, user1, category, "Título do post", "Subtítulo do post", "Conteudo do post", LocalDateTime.now(),
 				"url da imagem do post", true);
 		post1.addTag(tagService.findById(1l), tagService.findById(2l));
 		postService.save(post1);

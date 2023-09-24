@@ -31,31 +31,29 @@ public class Post {
 	@JoinColumn(name = "id_category", foreignKey = @ForeignKey(name = "fk_post_category"))
 	private Category category;
 	@ManyToMany
-	@JoinTable(
-			uniqueConstraints = @UniqueConstraint(
-					columnNames = {"id_post", "id_tag"}),
-			name = "post_tag",
-			joinColumns = @JoinColumn(name = "id_post"),
-			inverseJoinColumns = @JoinColumn(name = "id_tag"))
+	@JoinTable(uniqueConstraints = @UniqueConstraint(columnNames = { "id_post",
+			"id_tag" }), name = "post_tag", joinColumns = @JoinColumn(name = "id_post"), inverseJoinColumns = @JoinColumn(name = "id_tag"))
 	private Set<Tag> tags = new HashSet<>();
 	private String title;
+	@Column(name = "sub_title")
+	private String subTitle;
 	private String content;
 	@Column(name = "date_created")
 	private LocalDateTime dateCreated;
 	@Column(name = "url_img_post")
 	private String urlImgPost;
 	private boolean status;
-	//TODO atributo view
-	
+
 	public Post() {
 	}
-	
-	public Post(Long idPost, User author, Category category, String title, String content, LocalDateTime dateCreated,
-			String urlImgPost, boolean status) {
+
+	public Post(Long idPost, User author, Category category, String title, String subTitle, String content,
+			LocalDateTime dateCreated, String urlImgPost, boolean status) {
 		this.idPost = idPost;
 		this.author = author;
 		this.category = category;
 		this.title = title;
+		this.subTitle = subTitle;
 		this.content = content;
 		this.dateCreated = dateCreated;
 		this.urlImgPost = urlImgPost;
@@ -92,7 +90,7 @@ public class Post {
 
 	public void addTag(Tag... tagsArgument) {
 		for (Tag tagObj : tagsArgument) {
-			this.tags.add(tagObj);			
+			this.tags.add(tagObj);
 		}
 	}
 
@@ -134,5 +132,13 @@ public class Post {
 
 	public void setStatus(boolean status) {
 		this.status = status;
+	}
+
+	public String getSubTitle() {
+		return subTitle;
+	}
+
+	public void setSubTitle(String subTitle) {
+		this.subTitle = subTitle;
 	}
 }
