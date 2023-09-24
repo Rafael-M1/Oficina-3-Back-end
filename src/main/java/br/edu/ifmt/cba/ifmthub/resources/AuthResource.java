@@ -45,6 +45,9 @@ public class AuthResource {
 	@Value("${sendgrid.api.key}")
 	private String sendgridApiKey;
 	
+	@Value("${api.backend.hostaddress}")
+	private String hostAddress;
+	
 	@Autowired
 	private AuthenticationManager authenticationManager;
 
@@ -123,8 +126,7 @@ public class AuthResource {
 	private void sendConfirmationEmail(User newUser) {
 		try {
 			String confirmationToken = EmailConfirmationEncryption.encryptString(newUser.getEmail());
-			String host = "http://" + InetAddress.getLocalHost().getHostAddress();
-			String link = host + "auth/confirm?token="
+			String link = hostAddress + "/auth/confirm?token="
 					+ URLEncoder.encode(confirmationToken, StandardCharsets.UTF_8.toString());
 			String htmlContent = "<p>Ol&aacute;,&nbsp;" + newUser.getFullName() + "!</p>" + "<p>&nbsp;</p>"
 					+ "<p>Sua conta no IFMT Hub est&aacute; quase pronta. Para ativ&aacute;-la, por favor confirme o seu endere&ccedil;o de email clicando no link abaixo.</p>"
