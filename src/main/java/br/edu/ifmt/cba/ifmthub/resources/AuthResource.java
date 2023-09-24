@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -40,6 +41,9 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping(value = "/auth")
 public class AuthResource {
+	@Value("${sendgrid.api.key}")
+	private String sendgridApiKey;
+	
 	@Autowired
 	private AuthenticationManager authenticationManager;
 
@@ -133,7 +137,6 @@ public class AuthResource {
 			Email to = new Email(newUser.getEmail());
 			Content content = new Content("text/html", htmlContent);
 			Mail mail = new Mail(from, subject, to, content);
-			String sendgridApiKey = System.getenv("SENDGRID_API_KEY");
 			
 			SendGrid sg = new SendGrid(sendgridApiKey);
 			Request request = new Request();
