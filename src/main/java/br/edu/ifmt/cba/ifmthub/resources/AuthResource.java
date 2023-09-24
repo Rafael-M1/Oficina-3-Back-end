@@ -83,7 +83,7 @@ public class AuthResource {
 	@PostMapping("/register")
 	public ResponseEntity register(@RequestBody @Valid RegisterDTO data) {
 		if (this.repository.findByEmail(data.getEmail()) != null) {
-			return ResponseEntity.badRequest().build();
+			return ResponseEntity.badRequest().body(Map.of("message", "An account with this E-mail already exists."));
 		}
 		String encryptedPassword = passwordEncoder.encode(data.getPassword());
 		User newUser = new User();
