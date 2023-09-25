@@ -27,9 +27,9 @@ public class PostResource {
 	private PostService postService;
 	
 	@PostMapping
-	public ResponseEntity<Post> save(@RequestBody @Valid PostInsertDTO postInsertDTO) {
-		Post postSaved = this.postService.save(postInsertDTO);
-		return new ResponseEntity<Post>(postSaved, HttpStatus.CREATED);
+	public ResponseEntity<PostResponseDTO> save(@RequestBody @Valid PostInsertDTO postInsertDTO) {
+		PostResponseDTO postSaved = new PostResponseDTO(this.postService.save(postInsertDTO));
+		return new ResponseEntity<PostResponseDTO>(postSaved, HttpStatus.CREATED);
 	}
 	
 	@GetMapping("/filter")
