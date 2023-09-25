@@ -15,7 +15,7 @@ public class PostInsertDTO {
 	@Valid
 	private CategoryDTO category;
 	@NotEmpty(message = "Tag must not be empty")
-	@NotNull
+	@NotNull(message = "Tag must not be null")
 	@Valid
 	private List<TagDTO> tags = new ArrayList<>();
 	@NotBlank(message = "Title must not be empty")

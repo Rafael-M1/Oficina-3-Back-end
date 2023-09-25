@@ -43,7 +43,8 @@ public class User implements UserDetails, Serializable {
 	private Set<Course> courses = new HashSet<>();
 	@Column(name = "full_name")
 	private String fullName;
-	private char gender;
+	@Column(length = 1)
+	private String gender;
 	@Column(name = "date_created")
 	private LocalDateTime dateCreated;
 	@Column(name = "birth_date")
@@ -80,11 +81,11 @@ public class User implements UserDetails, Serializable {
 		this.fullName = fullName;
 	}
 
-	public char getGender() {
+	public String getGender() {
 		return gender;
 	}
 
-	public void setGender(char gender) {
+	public void setGender(String gender) {
 		this.gender = gender;
 	}
 

@@ -12,19 +12,19 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public class RegisterDTO {
-	@Email
-	@NotNull
+	@Email(message = "Invalid e-mail")
+	@NotNull(message = "Must not be null")
 	private String email;
-	@Size(min = 6)
-	@NotNull
+	@Size(min = 6, message = "Minimum length: 6")
+	@NotNull(message = "Must not be null")
 	private String password;
-	@NotBlank
+	@NotBlank(message = "Must not be blank")
 	private String fullName;
-	@Pattern(message = "Values allowed: ['M', 'F']", regexp = "\b(M|F)\b")
-	@NotNull
-	private char gender;
+	@Pattern(message = "Values allowed: ['M', 'F']", regexp = "\\b(M|F)\\b")
+	@NotNull(message = "Must not be null")
+	private String gender;
 	@Past
-	@NotNull
+	@NotNull(message = "Must not be null")
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	private LocalDate birthDate;
 	private String urlImgProfile;
@@ -41,7 +41,7 @@ public class RegisterDTO {
 		return fullName;
 	}
 
-	public char getGender() {
+	public String getGender() {
 		return gender;
 	}
 

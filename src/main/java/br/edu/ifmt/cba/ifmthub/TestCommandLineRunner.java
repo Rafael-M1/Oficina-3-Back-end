@@ -68,7 +68,7 @@ public class TestCommandLineRunner implements CommandLineRunner {
 		user1.setStatus(true);
 		user1.setAccountConfirmed(true);
 		user1.setFullName("Rafael");
-		user1.setGender('M');
+		user1.setGender("M");
 		user1.setBirthDate(LocalDate.now());
 		user1.setDateCreated(LocalDateTime.now());
 		user1.setUrlImgProfile(
@@ -84,7 +84,7 @@ public class TestCommandLineRunner implements CommandLineRunner {
 		user2.setStatus(true);
 		user2.setAccountConfirmed(false);
 		user2.setFullName("Maria");
-		user2.setGender('F');
+		user2.setGender("F");
 		user2.setBirthDate(LocalDate.now());
 		user2.setDateCreated(LocalDateTime.now());
 		user2.setUrlImgProfile(
