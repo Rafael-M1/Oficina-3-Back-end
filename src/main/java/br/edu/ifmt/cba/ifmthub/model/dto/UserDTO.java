@@ -9,7 +9,7 @@ public class UserDTO {
 	private Long idUser;
 	private String email;
 	private String fullName;
-	private char gender;
+	private String gender;
 	private LocalDateTime dateCreated;
 	private LocalDate birthDate;
 	private String urlImgProfile;
@@ -52,11 +52,11 @@ public class UserDTO {
 		this.fullName = fullName;
 	}
 
-	public char getGender() {
+	public String getGender() {
 		return gender;
 	}
 
-	public void setGender(char gender) {
+	public void setGender(String gender) {
 		this.gender = gender;
 	}
 
