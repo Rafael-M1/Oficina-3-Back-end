@@ -1,6 +1,5 @@
 package br.edu.ifmt.cba.ifmthub.resources;
 
-import java.net.InetAddress;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -32,8 +31,8 @@ import com.sendgrid.helpers.mail.objects.Email;
 import br.edu.ifmt.cba.ifmthub.configs.TokenService;
 import br.edu.ifmt.cba.ifmthub.model.Role;
 import br.edu.ifmt.cba.ifmthub.model.User;
+import br.edu.ifmt.cba.ifmthub.model.dto.LoginRequestDTO;
 import br.edu.ifmt.cba.ifmthub.model.dto.RegisterDTO;
-import br.edu.ifmt.cba.ifmthub.model.dto.UserDTO;
 import br.edu.ifmt.cba.ifmthub.repositories.RoleRepository;
 import br.edu.ifmt.cba.ifmthub.repositories.UserRepository;
 import br.edu.ifmt.cba.ifmthub.utils.EmailConfirmationEncryption;
@@ -64,7 +63,7 @@ public class AuthResource {
 	private PasswordEncoder passwordEncoder;
 
 	@PostMapping("/login")
-	public ResponseEntity<Map<String, Object>> login(@RequestBody @Valid UserDTO data) {
+	public ResponseEntity<Map<String, Object>> login(@RequestBody @Valid LoginRequestDTO data) {
 		var usernamePassword = new UsernamePasswordAuthenticationToken(data.getEmail(), data.getPassword());
 		var auth = this.authenticationManager.authenticate(usernamePassword);
 		User user = (User) auth.getPrincipal();

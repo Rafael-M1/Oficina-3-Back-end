@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import br.edu.ifmt.cba.ifmthub.model.User;
-import br.edu.ifmt.cba.ifmthub.repositories.UserRepository;
+import br.edu.ifmt.cba.ifmthub.services.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,7 +21,7 @@ public class SecurityFilter extends OncePerRequestFilter {
 	@Autowired
 	TokenService tokenService;
 	@Autowired
-	UserRepository userRepository;
+	UserService userService;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -29,7 +29,7 @@ public class SecurityFilter extends OncePerRequestFilter {
 		var token = this.recoverToken(request);
 		if (token != null) {
 			var login = tokenService.validateToken(token);
-			User user = userRepository.findByEmail(login);
+			User user = userService.findByEmail(login);
 			var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 		}

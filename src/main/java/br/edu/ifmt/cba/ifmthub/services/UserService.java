@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.edu.ifmt.cba.ifmthub.model.User;
 import br.edu.ifmt.cba.ifmthub.repositories.UserRepository;
@@ -25,6 +26,11 @@ public class UserService implements UserDetailsService {
 
 	public User findById(Long idUser) {
 		return userRepository.findById(idUser).get();
+	}
+	
+	@Transactional
+	public User findByEmail(String email) {
+		return userRepository.findByEmail(email);
 	}
 
 	public List<User> findAll() {
