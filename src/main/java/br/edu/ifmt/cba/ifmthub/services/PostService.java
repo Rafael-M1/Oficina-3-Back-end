@@ -92,4 +92,8 @@ public class PostService {
 	public void delete(Long idPost) {
 		postRepository.deleteById(idPost);
 	}
+
+	public List<Post> findAllFilteredByQueryText(String query) {
+		return postRepository.findAllFilteredByQueryText(query);
+	}
 }

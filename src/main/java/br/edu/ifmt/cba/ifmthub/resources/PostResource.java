@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.edu.ifmt.cba.ifmthub.model.Post;
@@ -28,6 +29,12 @@ public class PostResource {
 	public ResponseEntity<Post> save(@RequestBody @Valid PostInsertDTO postInsertDTO) {
 		Post postSaved = this.postService.save(postInsertDTO);
 		return new ResponseEntity<Post>(postSaved, HttpStatus.CREATED);
+	}
+	
+	@GetMapping("/filter")
+	public ResponseEntity<List<Post>> findAllFilteredByQueryText(@RequestParam String query) {
+		List<Post> postList = this.postService.findAllFilteredByQueryText(query);
+		return new ResponseEntity<List<Post>>(postList, HttpStatus.OK);
 	}
 	
 	@GetMapping
