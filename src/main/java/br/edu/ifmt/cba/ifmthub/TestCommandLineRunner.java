@@ -101,7 +101,5 @@ public class TestCommandLineRunner implements CommandLineRunner {
 				"url da imagem do post", true);
 		post1.addTag(tagService.findById(1l), tagService.findById(2l));
 		postService.save(post1);
-
-		//System.out.println("Email criptografado:" + EmailConfirmationEncryption.encryptString("maria@gmail.com"));
 	}
 }
