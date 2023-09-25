@@ -3,6 +3,7 @@ package br.edu.ifmt.cba.ifmthub.services;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import br.edu.ifmt.cba.ifmthub.model.Post;
 import br.edu.ifmt.cba.ifmthub.model.Tag;
 import br.edu.ifmt.cba.ifmthub.model.User;
 import br.edu.ifmt.cba.ifmthub.model.dto.PostInsertDTO;
+import br.edu.ifmt.cba.ifmthub.model.dto.PostResponseDTO;
 import br.edu.ifmt.cba.ifmthub.model.dto.TagDTO;
 import br.edu.ifmt.cba.ifmthub.repositories.CategoryRepository;
 import br.edu.ifmt.cba.ifmthub.repositories.PostRepository;
@@ -22,13 +24,13 @@ import br.edu.ifmt.cba.ifmthub.repositories.UserRepository;
 public class PostService {
 	@Autowired
 	private PostRepository postRepository;
-	
+
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	@Autowired
 	private CategoryRepository categoryRepository;
-	
+
 	@Autowired
 	private TagRepository tagRepository;
 
@@ -40,13 +42,15 @@ public class PostService {
 
 	public Post save(PostInsertDTO postInsertDTO) {
 		Post post = new Post();
-		User author = userRepository.findById(postInsertDTO.getIdAuthor()).get(); 
+		User author = userRepository.findById(postInsertDTO.getIdAuthor()).get();
 		post.setAuthor(author);
-		Optional<Category> categoryOpt = categoryRepository.findByDescription(postInsertDTO.getCategory().getDescription());
+		Optional<Category> categoryOpt = categoryRepository
+				.findByDescription(postInsertDTO.getCategory().getDescription());
 		if (categoryOpt.isPresent()) {
 			post.setCategory(categoryOpt.get());
 		} else {
-			Category category = new Category(null, postInsertDTO.getCategory().getDescription(), LocalDateTime.now(), true);
+			Category category = new Category(null, postInsertDTO.getCategory().getDescription(), LocalDateTime.now(),
+					true);
 			category = categoryRepository.save(category);
 			post.setCategory(category);
 		}
@@ -68,12 +72,13 @@ public class PostService {
 		return postRepository.save(post);
 	}
 
-	public Post findById(Long idPost) {
-		return postRepository.findById(idPost).get();
+	public PostResponseDTO findById(Long idPost) {
+		Post post = postRepository.findById(idPost).get();
+		return new PostResponseDTO(post);
 	}
 
-	public List<Post> findAll() {
-		return postRepository.findAll();
+	public List<PostResponseDTO> findAll() {
+		return postRepository.findAll().stream().map(post -> new PostResponseDTO(post)).collect(Collectors.toList());
 	}
 
 	public Post update(Post post) {
@@ -93,7 +98,8 @@ public class PostService {
 		postRepository.deleteById(idPost);
 	}
 
-	public List<Post> findAllFilteredByQueryText(String query) {
-		return postRepository.findAllFilteredByQueryText(query);
+	public List<PostResponseDTO> findAllFilteredByQueryText(String query) {
+		return postRepository.findAllFilteredByQueryText(query).stream().map(post -> new PostResponseDTO(post))
+				.collect(Collectors.toList());
 	}
 }

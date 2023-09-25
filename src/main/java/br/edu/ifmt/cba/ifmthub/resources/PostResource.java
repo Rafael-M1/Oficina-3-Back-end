@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.edu.ifmt.cba.ifmthub.model.Post;
 import br.edu.ifmt.cba.ifmthub.model.dto.PostInsertDTO;
+import br.edu.ifmt.cba.ifmthub.model.dto.PostResponseDTO;
 import br.edu.ifmt.cba.ifmthub.services.PostService;
 import jakarta.validation.Valid;
 
@@ -32,20 +33,20 @@ public class PostResource {
 	}
 	
 	@GetMapping("/filter")
-	public ResponseEntity<List<Post>> findAllFilteredByQueryText(@RequestParam String query) {
-		List<Post> postList = this.postService.findAllFilteredByQueryText(query);
-		return new ResponseEntity<List<Post>>(postList, HttpStatus.OK);
+	public ResponseEntity<List<PostResponseDTO>> findAllFilteredByQueryText(@RequestParam String query) {
+		List<PostResponseDTO> postList = this.postService.findAllFilteredByQueryText(query);
+		return new ResponseEntity<List<PostResponseDTO>>(postList, HttpStatus.OK);
 	}
 	
 	@GetMapping
-	public ResponseEntity<List<Post>> findAll() {
-		List<Post> postList = this.postService.findAll();
-		return new ResponseEntity<List<Post>>(postList, HttpStatus.OK);
+	public ResponseEntity<List<PostResponseDTO>> findAll() {
+		List<PostResponseDTO> postList = this.postService.findAll();
+		return new ResponseEntity<List<PostResponseDTO>>(postList, HttpStatus.OK);
 	}
 	
 	@GetMapping("/{idPost}")
-	public ResponseEntity<Post> findById(@PathVariable Long idPost) {
-		Post postFound = this.postService.findById(idPost);
-		return new ResponseEntity<Post>(postFound, HttpStatus.OK);
+	public ResponseEntity<PostResponseDTO> findById(@PathVariable Long idPost) {
+		PostResponseDTO postFound = this.postService.findById(idPost);
+		return new ResponseEntity<PostResponseDTO>(postFound, HttpStatus.OK);
 	}
 }
