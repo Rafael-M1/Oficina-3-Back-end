@@ -45,7 +45,7 @@ public class SecurityConfiguration {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
     	CorsConfiguration configuration = new CorsConfiguration();
-    	configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+    	configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000","https://ifmt-hub.vercel.app"));
     	configuration.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "PATCH"));
     	configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
     	configuration.setAllowCredentials(true);
