@@ -19,6 +19,7 @@ import br.edu.ifmt.cba.ifmthub.repositories.CategoryRepository;
 import br.edu.ifmt.cba.ifmthub.repositories.PostRepository;
 import br.edu.ifmt.cba.ifmthub.repositories.TagRepository;
 import br.edu.ifmt.cba.ifmthub.repositories.UserRepository;
+import br.edu.ifmt.cba.ifmthub.resources.exceptions.ResourceNotFoundException;
 
 @Service
 public class PostService {
@@ -42,7 +43,8 @@ public class PostService {
 
 	public Post save(PostInsertDTO postInsertDTO) {
 		Post post = new Post();
-		User author = userRepository.findById(postInsertDTO.getIdAuthor()).get();
+		User author = userRepository.findById(postInsertDTO.getIdAuthor()).orElseThrow(
+				() -> new ResourceNotFoundException("No author present with idAuthor = " + postInsertDTO.getIdAuthor()));		
 		post.setAuthor(author);
 		Optional<Category> categoryOpt = categoryRepository
 				.findByDescription(postInsertDTO.getCategory().getDescription());
