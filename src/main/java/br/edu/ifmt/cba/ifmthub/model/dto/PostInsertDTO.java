@@ -25,6 +25,7 @@ public class PostInsertDTO {
 	@NotBlank(message = "Content must not be empty")
 	private String content;
 	private String urlImgPost;
+	private boolean status;
 
 	public PostInsertDTO() {
 	}
@@ -57,9 +58,18 @@ public class PostInsertDTO {
 		return subtitle;
 	}
 
+	public boolean isStatus() {
+		return status;
+	}
+
+	public void setStatus(boolean status) {
+		this.status = status;
+	}
+
 	@Override
 	public String toString() {
 		return "PostInsertDTO [idAuthor=" + idAuthor + ", category=" + category + ", tags=" + tags + ", title=" + title
-				+ ", subtitle=" + subtitle + ", content=" + content + ", urlImgPost=" + urlImgPost + "]";
+				+ ", subtitle=" + subtitle + ", content=" + content + ", urlImgPost=" + urlImgPost + ", status="
+				+ status + "]";
 	}
 }
