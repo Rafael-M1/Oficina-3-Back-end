@@ -33,6 +33,6 @@ public class CommentResource {
 	@PostMapping
 	public ResponseEntity<CommentDTO> save(@RequestBody @Valid CommentInsertDTO commentInsertDTO) {
 		CommentDTO commentDTO = commentService.save(commentInsertDTO);
-		return new ResponseEntity<CommentDTO>(commentDTO, HttpStatus.OK);
+		return new ResponseEntity<CommentDTO>(commentDTO, HttpStatus.CREATED);
 	}
 }
