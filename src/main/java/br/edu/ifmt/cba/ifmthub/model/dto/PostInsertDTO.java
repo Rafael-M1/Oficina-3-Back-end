@@ -9,8 +9,6 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 public class PostInsertDTO {
-	@NotNull(message = "Author ID must not be empty")
-	private Long idAuthor;
 	@NotNull(message = "Category must not be empty")
 	@Valid
 	private CategoryDTO category;
@@ -28,10 +26,6 @@ public class PostInsertDTO {
 	private boolean status;
 
 	public PostInsertDTO() {
-	}
-
-	public Long getIdAuthor() {
-		return idAuthor;
 	}
 
 	public CategoryDTO getCategory() {
@@ -68,8 +62,7 @@ public class PostInsertDTO {
 
 	@Override
 	public String toString() {
-		return "PostInsertDTO [idAuthor=" + idAuthor + ", category=" + category + ", tags=" + tags + ", title=" + title
-				+ ", subtitle=" + subtitle + ", content=" + content + ", urlImgPost=" + urlImgPost + ", status="
-				+ status + "]";
+		return "PostInsertDTO [category=" + category + ", tags=" + tags + ", title=" + title + ", subtitle=" + subtitle
+				+ ", content=" + content + ", urlImgPost=" + urlImgPost + ", status=" + status + "]";
 	}
 }

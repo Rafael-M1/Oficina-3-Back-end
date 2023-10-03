@@ -6,6 +6,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import br.edu.ifmt.cba.ifmthub.model.Category;
@@ -19,16 +21,12 @@ import br.edu.ifmt.cba.ifmthub.model.dto.TagDTO;
 import br.edu.ifmt.cba.ifmthub.repositories.CategoryRepository;
 import br.edu.ifmt.cba.ifmthub.repositories.PostRepository;
 import br.edu.ifmt.cba.ifmthub.repositories.TagRepository;
-import br.edu.ifmt.cba.ifmthub.repositories.UserRepository;
 import br.edu.ifmt.cba.ifmthub.resources.exceptions.ResourceNotFoundException;
 
 @Service
 public class PostService {
 	@Autowired
 	private PostRepository postRepository;
-
-	@Autowired
-	private UserRepository userRepository;
 
 	@Autowired
 	private CategoryRepository categoryRepository;
@@ -44,8 +42,12 @@ public class PostService {
 
 	public Post save(PostInsertDTO postInsertDTO) {
 		Post post = new Post();
-		User author = userRepository.findById(postInsertDTO.getIdAuthor()).orElseThrow(
-				() -> new ResourceNotFoundException("No author present with idAuthor = " + postInsertDTO.getIdAuthor()));		
+		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		User author = (User) authentication.getPrincipal();
+		if (authentication == null || author == null) {
+			throw new ResourceNotFoundException("User not authenticated.");
+		}
 		post.setAuthor(author);
 		Optional<Category> categoryOpt = categoryRepository
 				.findByDescription(postInsertDTO.getCategory().getDescription());
