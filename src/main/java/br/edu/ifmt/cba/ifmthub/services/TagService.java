@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import br.edu.ifmt.cba.ifmthub.model.Tag;
 import br.edu.ifmt.cba.ifmthub.repositories.TagRepository;
+import br.edu.ifmt.cba.ifmthub.resources.exceptions.ResourceNotFoundException;
 
 @Service
 public class TagService {
@@ -21,7 +22,8 @@ public class TagService {
 	}
 
 	public Tag findById(Long idTag) {
-		return tagRepository.findById(idTag).get();
+		return tagRepository.findById(idTag)
+				.orElseThrow(() -> new ResourceNotFoundException("No tag present with idTag = " + idTag));
 	}
 
 	public List<Tag> findAll() {
@@ -29,7 +31,7 @@ public class TagService {
 	}
 
 	public Tag update(Tag tag) {
-		Tag tagSaved = tagRepository.findById(tag.getIdTag()).get();
+		Tag tagSaved = this.findById(tag.getIdTag());
 		tagSaved.setDescription(tag.getDescription());
 		tagSaved.setStatus(tag.isStatus());
 		tagRepository.save(tagSaved);

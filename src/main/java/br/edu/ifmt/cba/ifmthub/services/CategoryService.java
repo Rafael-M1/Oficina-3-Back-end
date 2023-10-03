@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import br.edu.ifmt.cba.ifmthub.model.Category;
 import br.edu.ifmt.cba.ifmthub.repositories.CategoryRepository;
+import br.edu.ifmt.cba.ifmthub.resources.exceptions.ResourceNotFoundException;
 
 @Service
 public class CategoryService {
@@ -21,7 +22,8 @@ public class CategoryService {
 	}
 
 	public Category findById(Long idCategory) {
-		return categoryRepository.findById(idCategory).get();
+		return categoryRepository.findById(idCategory).orElseThrow(
+				() -> new ResourceNotFoundException("No category present with idCategory = " + idCategory));
 	}
 
 	public List<Category> findAll() {
@@ -29,7 +31,7 @@ public class CategoryService {
 	}
 
 	public Category update(Category category) {
-		Category categorySaved = categoryRepository.findById(category.getIdCategory()).get();
+		Category categorySaved = this.findById(category.getIdCategory());
 		categorySaved.setDescription(category.getDescription());
 		categorySaved.setStatus(category.isStatus());
 		categoryRepository.save(categorySaved);

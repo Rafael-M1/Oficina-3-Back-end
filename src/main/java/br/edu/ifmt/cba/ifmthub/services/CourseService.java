@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import br.edu.ifmt.cba.ifmthub.model.Course;
 import br.edu.ifmt.cba.ifmthub.repositories.CourseRepository;
+import br.edu.ifmt.cba.ifmthub.resources.exceptions.ResourceNotFoundException;
 
 @Service
 public class CourseService {
@@ -20,8 +21,9 @@ public class CourseService {
 		return courseRepository.save(course);
 	}
 
-	public Course findById(Long idCourseId) {
-		return courseRepository.findById(idCourseId).get();
+	public Course findById(Long idCourse) {
+		return courseRepository.findById(idCourse).orElseThrow(
+				() -> new ResourceNotFoundException("No course present with idCourse = " + idCourse));
 	}
 
 	public List<Course> findAll() {
@@ -29,7 +31,7 @@ public class CourseService {
 	}
 
 	public Course update(Course course) {
-		Course courseSaved = courseRepository.findById(course.getIdCourse()).get();
+		Course courseSaved = this.findById(course.getIdCourse());
 		courseSaved.setDescription(course.getDescription());
 		courseSaved.setStatus(course.isStatus());
 		courseRepository.save(courseSaved);

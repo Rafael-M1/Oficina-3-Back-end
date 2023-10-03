@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.edu.ifmt.cba.ifmthub.model.User;
 import br.edu.ifmt.cba.ifmthub.repositories.UserRepository;
+import br.edu.ifmt.cba.ifmthub.resources.exceptions.ResourceNotFoundException;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -25,9 +26,10 @@ public class UserService implements UserDetailsService {
 	}
 
 	public User findById(Long idUser) {
-		return userRepository.findById(idUser).get();
+		return userRepository.findById(idUser)
+				.orElseThrow(() -> new ResourceNotFoundException("No user present with idUser = " + idUser));
 	}
-	
+
 	@Transactional
 	public User findByEmail(String email) {
 		return userRepository.findByEmail(email);
@@ -38,7 +40,7 @@ public class UserService implements UserDetailsService {
 	}
 
 	public User update(User user) {
-		User userSaved = userRepository.findById(user.getIdUser()).get();
+		User userSaved = this.findById(user.getIdUser());
 		userSaved.setFullName(user.getFullName());
 		userSaved.setGender(user.getGender());
 		userSaved.setStatus(user.isStatus());
