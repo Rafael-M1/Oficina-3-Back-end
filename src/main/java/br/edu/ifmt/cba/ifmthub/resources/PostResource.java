@@ -1,6 +1,7 @@
 package br.edu.ifmt.cba.ifmthub.resources;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,29 +26,36 @@ public class PostResource {
 
 	@Autowired
 	private PostService postService;
-	
+
 	@PostMapping
 	public ResponseEntity<PostResponseDTO> save(@RequestBody @Valid PostInsertDTO postInsertDTO) {
 		PostResponseDTO postSaved = new PostResponseDTO(this.postService.save(postInsertDTO));
 		return new ResponseEntity<PostResponseDTO>(postSaved, HttpStatus.CREATED);
 	}
-	
+
 	@GetMapping("/filter")
 	public ResponseEntity<List<PostResponseDTO>> findAllFilteredByQueryText(@RequestParam String query) {
 		List<PostResponseDTO> postList = this.postService.findAllFilteredByQueryText(query);
 		return new ResponseEntity<List<PostResponseDTO>>(postList, HttpStatus.OK);
 	}
-	
-	//TODO return page instead
+
+	// TODO return page instead
 	@GetMapping
 	public ResponseEntity<List<PostResponseDTO>> findAll() {
 		List<PostResponseDTO> postList = this.postService.findAll();
 		return new ResponseEntity<List<PostResponseDTO>>(postList, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/{idPost}")
 	public ResponseEntity<PostResponseWithCommentsDTO> findById(@PathVariable Long idPost) {
 		PostResponseWithCommentsDTO postFound = this.postService.findByIdWithComments(idPost);
 		return new ResponseEntity<PostResponseWithCommentsDTO>(postFound, HttpStatus.OK);
 	}
+
+	@PostMapping("/bookmark/{idPost}")
+	public ResponseEntity<Map<String, Object>> toggleBookmark(@PathVariable Long idPost) {
+		String response = this.postService.toggleBookmark(idPost);
+		return new ResponseEntity<Map<String, Object>>(Map.of("message", response), HttpStatus.CREATED);
+	}
+
 }

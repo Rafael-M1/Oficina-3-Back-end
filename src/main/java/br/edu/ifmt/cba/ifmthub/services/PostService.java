@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.edu.ifmt.cba.ifmthub.model.Category;
 import br.edu.ifmt.cba.ifmthub.model.Post;
@@ -42,7 +43,6 @@ public class PostService {
 
 	public Post save(PostInsertDTO postInsertDTO) {
 		Post post = new Post();
-		
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		User author = (User) authentication.getPrincipal();
 		if (authentication == null || author == null) {
@@ -79,7 +79,8 @@ public class PostService {
 	}
 
 	public PostResponseDTO findById(Long idPost) {
-		Post post = postRepository.findById(idPost).get();
+		Post post = postRepository.findById(idPost)
+				.orElseThrow(() -> new ResourceNotFoundException("No post present with idPost = " + idPost));
 		return new PostResponseDTO(post);
 	}
 
@@ -88,7 +89,8 @@ public class PostService {
 	}
 
 	public Post update(Post post) {
-		Post postSaved = postRepository.findById(post.getIdPost()).get();
+		Post postSaved = postRepository.findById(post.getIdPost())
+				.orElseThrow(() -> new ResourceNotFoundException("No post present with idPost = " + post.getIdPost()));
 		postSaved.setAuthor(post.getAuthor());
 		postSaved.setCategory(post.getCategory());
 		postSaved.setTitle(post.getTitle());
@@ -110,7 +112,31 @@ public class PostService {
 	}
 
 	public PostResponseWithCommentsDTO findByIdWithComments(Long idPost) {
-		Post post = postRepository.findById(idPost).get();
+		Post post = postRepository.findById(idPost)
+				.orElseThrow(() -> new ResourceNotFoundException("No post present with idPost = " + idPost));
 		return new PostResponseWithCommentsDTO(post);
+	}
+
+	@Transactional
+	public String toggleBookmark(Long idPost) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		User user = (User) authentication.getPrincipal();
+		if (authentication == null || user == null) {
+			throw new ResourceNotFoundException("User not authenticated.");
+		}
+		if (postRepository.checkIfExistsPost(idPost) != 1) {
+			throw new ResourceNotFoundException("No post present with idPost = " + idPost);
+		}
+		Long idUser = user.getIdUser();
+		Long response = this.postRepository.findBookmark(idUser, idPost);
+		if (response == 1) {
+			this.postRepository.deleteBookmarkByIdUserByIdPost(idUser, idPost);
+			return "Removed Bookmark of idPost = " + idPost + " From idUser = " + idUser + ".";
+		}
+		if (response == 0) {
+			this.postRepository.addBookmarkByIdUserByIdPost(idUser, idPost);
+			return "Added Bookmark of idPost = " + idPost + " From idUser = " + idUser + ".";
+		}
+		throw new IllegalArgumentException();
 	}
 }

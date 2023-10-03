@@ -48,6 +48,9 @@ public class Post {
 	private boolean status;
 	@OneToMany(mappedBy = "post")
 	private List<Comment> comments = new ArrayList<>();
+	
+	@ManyToMany(mappedBy = "bookmarks")
+	private Set<User> usersBookmarks = new HashSet<>();
 
 	public Post() {
 	}

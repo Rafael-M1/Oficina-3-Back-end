@@ -62,6 +62,12 @@ public class User implements UserDetails, Serializable {
 				inverseJoinColumns = @JoinColumn(name = "id_role"))
 	private Set<Role> roles = new HashSet<>();
 	
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "tb_bookmark",
+				joinColumns = @JoinColumn(name = "id_user"),
+				inverseJoinColumns = @JoinColumn(name = "id_post"))
+	private Set<Post> bookmarks = new HashSet<>();
+	
 	public User() {
 	}
 
@@ -146,6 +152,16 @@ public class User implements UserDetails, Serializable {
 	public void addRole(Role... roleArgument) {
 		for (Role roleObj : roleArgument) {
 			this.roles.add(roleObj);			
+		}
+	}
+	
+	public Set<Post> getBookmark() {
+		return bookmarks;
+	}
+
+	public void addBookMark(Post... postArgument) {
+		for (Post postObj : postArgument) {
+			this.bookmarks.add(postObj);			
 		}
 	}
 	
