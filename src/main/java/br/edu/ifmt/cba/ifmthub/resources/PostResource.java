@@ -45,6 +45,13 @@ public class PostResource {
 		List<PostResponseDTO> postList = this.postService.findAll();
 		return new ResponseEntity<List<PostResponseDTO>>(postList, HttpStatus.OK);
 	}
+	
+	// TODO return page instead
+	@GetMapping("/bookmark")
+	public ResponseEntity<List<PostResponseDTO>> findAllBookmark() {
+		List<PostResponseDTO> postList = this.postService.findAllBookmark();
+		return new ResponseEntity<List<PostResponseDTO>>(postList, HttpStatus.OK);
+	}
 
 	@GetMapping("/{idPost}")
 	public ResponseEntity<PostResponseWithCommentsDTO> findById(@PathVariable Long idPost) {

@@ -38,4 +38,9 @@ public interface PostRepository extends JpaRepository<Post, Long>{
 			nativeQuery = true)
 	void addBookmarkByIdUserByIdPost(Long idUser, Long idPost);
 
+	@Query("SELECT p FROM Post p "
+			+ "JOIN p.usersBookmarks ub "
+			+ "WHERE ub.idUser = :idUser ")
+	List<Post> findAllBookmark(Long idUser);
+
 }

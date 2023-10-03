@@ -139,4 +139,14 @@ public class PostService {
 		}
 		throw new IllegalArgumentException();
 	}
+
+	public List<PostResponseDTO> findAllBookmark() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		User user = (User) authentication.getPrincipal();
+		if (authentication == null || user == null) {
+			throw new ResourceNotFoundException("User not authenticated.");
+		}
+		return postRepository.findAllBookmark(user.getIdUser()).stream().map(post -> new PostResponseDTO(post))
+				.collect(Collectors.toList());
+	}
 }
