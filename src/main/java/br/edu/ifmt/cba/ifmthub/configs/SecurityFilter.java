@@ -30,22 +30,21 @@ public class SecurityFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 		var token = this.recoverToken(request);
 		if (token != null) {
-			if (request.getRequestURI().equals("/auth/login")) {
-				//TODO caso haja token mas é realizado novamente a rota de /auth/login
-			}
-			var login = tokenService.validateToken(token);
-			try {
-				User user = userService.findByEmail(login);
-				if (user != null) {
-					UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user,
-							null, user.getAuthorities());
-					SecurityContextHolder.getContext().setAuthentication(authentication);
+			if (!request.getRequestURI().equals("/auth/login")) {
+				var login = tokenService.validateToken(token);
+				try {
+					User user = userService.findByEmail(login);
+					if (user != null) {
+						UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user,
+								null, user.getAuthorities());
+						SecurityContextHolder.getContext().setAuthentication(authentication);
+					}
+				} catch (ResourceNotFoundException e) {
+					response.setContentType("application/json");
+					response.setStatus(HttpStatus.UNAUTHORIZED.value());
+					response.getWriter().write("\"message\":\"" + e.getMessage() + "\"");
+					return;
 				}
-			} catch (ResourceNotFoundException e) {
-				response.setContentType("application/json");
-				response.setStatus(HttpStatus.UNAUTHORIZED.value());
-				response.getWriter().write("\"message\":\"" + e.getMessage() + "\"");
-				return;
 			}
 		}
 		filterChain.doFilter(request, response);

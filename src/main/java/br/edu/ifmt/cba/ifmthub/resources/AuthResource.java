@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -44,10 +45,10 @@ import jakarta.validation.Valid;
 public class AuthResource {
 	@Value("${sendgrid.api.key}")
 	private String sendgridApiKey;
-	
+
 	@Value("${api.backend.hostaddress}")
 	private String hostAddress;
-	
+
 	@Autowired
 	private AuthenticationManager authenticationManager;
 
@@ -66,20 +67,23 @@ public class AuthResource {
 	@PostMapping("/login")
 	public ResponseEntity<Map<String, Object>> login(@RequestBody @Valid LoginRequestDTO data) {
 		var usernamePassword = new UsernamePasswordAuthenticationToken(data.getEmail(), data.getPassword());
-		System.out.println("usernamePassword:" + usernamePassword.toString());
-		var auth = this.authenticationManager.authenticate(usernamePassword);
-		System.out.println("auth:" + auth.toString());
-		User user = (User) auth.getPrincipal();
-		System.out.println("user:" + user.toString());
-		Map<String, Object> response = new HashMap<>();
-		if (user.isAccountConfirmed()) {
-			var token = tokenService.generateToken(user);
-			response.put("token", token);
-			return ResponseEntity.ok(response);
-		} else {
-			response.put("message", "Account not confirmed");
-			return ResponseEntity.badRequest().body(response);
+		try {
+			var auth = this.authenticationManager.authenticate(usernamePassword);
+			User user = (User) auth.getPrincipal();
+			Map<String, Object> response = new HashMap<>();
+			if (user.isAccountConfirmed()) {
+				var token = tokenService.generateToken(user);
+				response.put("token", token);
+				return ResponseEntity.ok(response);
+			} else {
+				response.put("message", "Account not confirmed");
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+			}
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+					.body(Map.of("message", "User does not exist or invalid credentials."));
 		}
+
 	}
 
 	@Transactional
@@ -138,13 +142,13 @@ public class AuthResource {
 					+ "<p>Sua conta n&atilde;o ser&aacute; ativada at&eacute; que seu email seja confirmado.</p>"
 					+ "<p>Se voc&ecirc; n&atilde;o se cadastrou&nbsp;no IFMT Hub recentemente, por favor ignore este email.</p>"
 					+ "<p>&nbsp;</p>" + "<p>Atenciosamente,</p>" + "<p>Equipe IFMT Hub.</p>";
-			
+
 			Email from = new Email("ifmthub@gmail.com");
 			String subject = "IFMT Hub: confirmação de conta";
 			Email to = new Email(newUser.getEmail());
 			Content content = new Content("text/html", htmlContent);
 			Mail mail = new Mail(from, subject, to, content);
-			
+
 			SendGrid sg = new SendGrid(sendgridApiKey);
 			Request request = new Request();
 			request.setMethod(Method.POST);
