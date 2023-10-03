@@ -32,7 +32,8 @@ public class UserService implements UserDetailsService {
 
 	@Transactional
 	public User findByEmail(String email) {
-		return userRepository.findByEmail(email);
+		return userRepository.findByEmail(email)
+				.orElseThrow(() -> new ResourceNotFoundException("Invalid Credentials"));
 	}
 
 	public List<User> findAll() {
@@ -55,6 +56,7 @@ public class UserService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		return userRepository.findByEmail(username);
+		return userRepository.findByEmail(username)
+				.orElseThrow(() -> new UsernameNotFoundException("Invalid Credentials"));
 	}
 }

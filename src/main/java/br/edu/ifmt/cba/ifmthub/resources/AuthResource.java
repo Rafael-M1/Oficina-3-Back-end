@@ -65,8 +65,11 @@ public class AuthResource {
 	@PostMapping("/login")
 	public ResponseEntity<Map<String, Object>> login(@RequestBody @Valid LoginRequestDTO data) {
 		var usernamePassword = new UsernamePasswordAuthenticationToken(data.getEmail(), data.getPassword());
+		System.out.println("usernamePassword:" + usernamePassword.toString());
 		var auth = this.authenticationManager.authenticate(usernamePassword);
+		System.out.println("auth:" + auth.toString());
 		User user = (User) auth.getPrincipal();
+		System.out.println("user:" + user.toString());
 		Map<String, Object> response = new HashMap<>();
 		if (user.isAccountConfirmed()) {
 			var token = tokenService.generateToken(user);

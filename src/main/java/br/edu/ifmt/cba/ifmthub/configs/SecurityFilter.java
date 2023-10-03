@@ -3,12 +3,14 @@ package br.edu.ifmt.cba.ifmthub.configs;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import br.edu.ifmt.cba.ifmthub.model.User;
+import br.edu.ifmt.cba.ifmthub.resources.exceptions.ResourceNotFoundException;
 import br.edu.ifmt.cba.ifmthub.services.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -28,12 +30,22 @@ public class SecurityFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 		var token = this.recoverToken(request);
 		if (token != null) {
+			if (request.getRequestURI().equals("/auth/login")) {
+				//TODO caso haja token mas é realizado novamente a rota de /auth/login
+			}
 			var login = tokenService.validateToken(token);
-			User user = userService.findByEmail(login);
-			if (user != null) {
-				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null,
-						user.getAuthorities());
-				SecurityContextHolder.getContext().setAuthentication(authentication);
+			try {
+				User user = userService.findByEmail(login);
+				if (user != null) {
+					UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user,
+							null, user.getAuthorities());
+					SecurityContextHolder.getContext().setAuthentication(authentication);
+				}
+			} catch (ResourceNotFoundException e) {
+				response.setContentType("application/json");
+				response.setStatus(HttpStatus.UNAUTHORIZED.value());
+				response.getWriter().write("\"message\":\"" + e.getMessage() + "\"");
+				return;
 			}
 		}
 		filterChain.doFilter(request, response);
