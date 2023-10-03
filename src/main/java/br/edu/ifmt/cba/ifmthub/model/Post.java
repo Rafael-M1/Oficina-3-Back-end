@@ -1,7 +1,9 @@
 package br.edu.ifmt.cba.ifmthub.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.Column;
@@ -14,6 +16,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
@@ -43,6 +46,8 @@ public class Post {
 	@Column(name = "url_img_post")
 	private String urlImgPost;
 	private boolean status;
+	@OneToMany(mappedBy = "post")
+	private List<Comment> comments = new ArrayList<>();
 
 	public Post() {
 	}
@@ -140,5 +145,13 @@ public class Post {
 
 	public void setSubTitle(String subTitle) {
 		this.subTitle = subTitle;
+	}
+
+	public List<Comment> getComments() {
+		return comments;
+	}
+
+	public void setComments(List<Comment> comments) {
+		this.comments = comments;
 	}
 }

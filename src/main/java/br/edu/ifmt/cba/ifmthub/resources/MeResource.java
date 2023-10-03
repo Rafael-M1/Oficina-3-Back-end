@@ -12,7 +12,7 @@ import br.edu.ifmt.cba.ifmthub.model.User;
 import br.edu.ifmt.cba.ifmthub.model.dto.UserDTO;
 
 @RestController
-public class MeController {
+public class MeResource {
 
 	@Transactional
 	@GetMapping("/me")

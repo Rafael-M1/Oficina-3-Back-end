@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.edu.ifmt.cba.ifmthub.model.Post;
 import br.edu.ifmt.cba.ifmthub.model.dto.PostInsertDTO;
 import br.edu.ifmt.cba.ifmthub.model.dto.PostResponseDTO;
+import br.edu.ifmt.cba.ifmthub.model.dto.PostResponseWithCommentsDTO;
 import br.edu.ifmt.cba.ifmthub.services.PostService;
 import jakarta.validation.Valid;
 
@@ -38,6 +38,7 @@ public class PostResource {
 		return new ResponseEntity<List<PostResponseDTO>>(postList, HttpStatus.OK);
 	}
 	
+	//TODO return page instead
 	@GetMapping
 	public ResponseEntity<List<PostResponseDTO>> findAll() {
 		List<PostResponseDTO> postList = this.postService.findAll();
@@ -45,8 +46,8 @@ public class PostResource {
 	}
 	
 	@GetMapping("/{idPost}")
-	public ResponseEntity<PostResponseDTO> findById(@PathVariable Long idPost) {
-		PostResponseDTO postFound = this.postService.findById(idPost);
-		return new ResponseEntity<PostResponseDTO>(postFound, HttpStatus.OK);
+	public ResponseEntity<PostResponseWithCommentsDTO> findById(@PathVariable Long idPost) {
+		PostResponseWithCommentsDTO postFound = this.postService.findByIdWithComments(idPost);
+		return new ResponseEntity<PostResponseWithCommentsDTO>(postFound, HttpStatus.OK);
 	}
 }

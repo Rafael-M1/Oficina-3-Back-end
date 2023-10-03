@@ -14,6 +14,7 @@ import br.edu.ifmt.cba.ifmthub.model.Tag;
 import br.edu.ifmt.cba.ifmthub.model.User;
 import br.edu.ifmt.cba.ifmthub.model.dto.PostInsertDTO;
 import br.edu.ifmt.cba.ifmthub.model.dto.PostResponseDTO;
+import br.edu.ifmt.cba.ifmthub.model.dto.PostResponseWithCommentsDTO;
 import br.edu.ifmt.cba.ifmthub.model.dto.TagDTO;
 import br.edu.ifmt.cba.ifmthub.repositories.CategoryRepository;
 import br.edu.ifmt.cba.ifmthub.repositories.PostRepository;
@@ -104,5 +105,10 @@ public class PostService {
 	public List<PostResponseDTO> findAllFilteredByQueryText(String query) {
 		return postRepository.findAllFilteredByQueryText(query).stream().map(post -> new PostResponseDTO(post))
 				.collect(Collectors.toList());
+	}
+
+	public PostResponseWithCommentsDTO findByIdWithComments(Long idPost) {
+		Post post = postRepository.findById(idPost).get();
+		return new PostResponseWithCommentsDTO(post);
 	}
 }

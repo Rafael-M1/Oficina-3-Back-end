@@ -83,4 +83,11 @@ public class UserDTO {
 	public void setUrlImgProfile(String urlImgProfile) {
 		this.urlImgProfile = urlImgProfile;
 	}
+
+	@Override
+	public String toString() {
+		return "UserDTO [idUser=" + idUser + ", email=" + email + ", fullName=" + fullName + ", gender=" + gender
+				+ ", dateCreated=" + dateCreated + ", birthDate=" + birthDate + ", urlImgProfile=" + urlImgProfile
+				+ "]";
+	}
 }
