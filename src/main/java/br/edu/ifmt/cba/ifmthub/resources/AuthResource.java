@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -109,8 +110,9 @@ public class AuthResource {
 	public ResponseEntity<Map<String, Object>> confirmAccount(@RequestParam String token) {
 		try {
 			String decryptedEmail = EmailConfirmationEncryption.decryptString(token);
-			User userFound = repository.findByEmail(decryptedEmail);
-			if (userFound != null) {
+			Optional<User> userFoundOpt = repository.findByEmail(decryptedEmail);
+			if (userFoundOpt.isPresent()) {
+				User userFound = userFoundOpt.get();
 				userFound.setAccountConfirmed(true);
 				repository.save(userFound);
 				Map<String, Object> response = new HashMap<>();
