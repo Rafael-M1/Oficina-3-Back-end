@@ -23,6 +23,7 @@ import br.edu.ifmt.cba.ifmthub.repositories.CategoryRepository;
 import br.edu.ifmt.cba.ifmthub.repositories.PostRepository;
 import br.edu.ifmt.cba.ifmthub.repositories.TagRepository;
 import br.edu.ifmt.cba.ifmthub.resources.exceptions.ResourceNotFoundException;
+import br.edu.ifmt.cba.ifmthub.utils.LoggedInUserUtils;
 
 @Service
 public class PostService {
@@ -114,7 +115,11 @@ public class PostService {
 	public PostResponseWithCommentsDTO findByIdWithComments(Long idPost) {
 		Post post = postRepository.findById(idPost)
 				.orElseThrow(() -> new ResourceNotFoundException("No post present with idPost = " + idPost));
-		return new PostResponseWithCommentsDTO(post);
+		boolean isUserAnonymous = LoggedInUserUtils.checkIfUserIsAnonymous();
+		if (!isUserAnonymous) {
+			return null;
+		}
+		return new PostResponseWithCommentsDTO(post, false, false);
 	}
 
 	@Transactional

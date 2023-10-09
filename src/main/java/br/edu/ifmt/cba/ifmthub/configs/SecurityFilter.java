@@ -12,6 +12,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import br.edu.ifmt.cba.ifmthub.model.User;
 import br.edu.ifmt.cba.ifmthub.resources.exceptions.ResourceNotFoundException;
 import br.edu.ifmt.cba.ifmthub.services.UserService;
+import br.edu.ifmt.cba.ifmthub.utils.AuthorizedRoutes;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,6 +29,9 @@ public class SecurityFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
+		System.out.println(request.getRequestURI()); // /post/1
+		String[] a = AuthorizedRoutes.authorizedRoutes;
+		System.out.println(a.toString());
 		var token = this.recoverToken(request);
 		if (token != null) {
 			if (!request.getRequestURI().equals("/auth/login")) {
