@@ -21,6 +21,8 @@ public class PostResponseWithCommentsDTO {
 	private LocalDateTime dateCreated;
 	private String urlImgPost;
 	private boolean status;
+	private boolean bookmarked;
+	private boolean favorited;
 	
 	public PostResponseWithCommentsDTO() {
 	}
@@ -37,6 +39,12 @@ public class PostResponseWithCommentsDTO {
 		this.dateCreated = post.getDateCreated();
 		this.urlImgPost = post.getUrlImgPost();
 		this.status = post.isStatus();
+	}
+	
+	public PostResponseWithCommentsDTO(Post post, boolean bookmarked, boolean favorited) {
+		this(post);
+		this.bookmarked = bookmarked;
+		this.favorited = favorited;
 	}
 
 	public Long getIdPost() {
@@ -81,6 +89,14 @@ public class PostResponseWithCommentsDTO {
 
 	public boolean isStatus() {
 		return status;
+	}
+
+	public boolean isBookmarked() {
+		return bookmarked;
+	}
+
+	public boolean isFavorited() {
+		return favorited;
 	}
 
 	@Override

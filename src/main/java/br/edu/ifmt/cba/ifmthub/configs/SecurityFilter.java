@@ -12,6 +12,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import br.edu.ifmt.cba.ifmthub.model.User;
 import br.edu.ifmt.cba.ifmthub.resources.exceptions.ResourceNotFoundException;
 import br.edu.ifmt.cba.ifmthub.services.UserService;
+import br.edu.ifmt.cba.ifmthub.utils.AuthorizedRoutes;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,22 +29,39 @@ public class SecurityFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-		var token = this.recoverToken(request);
-		if (token != null) {
-			if (!request.getRequestURI().equals("/auth/login")) {
-				try {
-					var login = tokenService.validateToken(token);
-					User user = userService.findByEmail(login);
-					if (user != null) {
-						UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user,
-								null, user.getAuthorities());
-						SecurityContextHolder.getContext().setAuthentication(authentication);
+		boolean isPublic = false;
+		String[] allowedPublicGetRoutes = AuthorizedRoutes.PUBLIC_GET_ROUTES;
+		if (request.getMethod().equals("GET")) {			
+			for (String route : allowedPublicGetRoutes) {
+				if (route.endsWith("/**")) {
+					String prefix = route.substring(0, route.length() - 3);
+					if (request.getRequestURI().startsWith(prefix)) {
+						isPublic = true;
 					}
-				} catch (ResourceNotFoundException e) {
-					response.setContentType("application/json");
-					response.setStatus(HttpStatus.UNAUTHORIZED.value());
-					response.getWriter().write("\"message\":\"" + e.getMessage() + "\"");
-					return;
+				} else if (route.equals(request.getRequestURI())) {
+					isPublic = true;
+				}
+			}
+		}
+		
+		if (!isPublic) {
+			var token = this.recoverToken(request);
+			if (token != null) {
+				if (!request.getRequestURI().equals("/auth/login")) {
+					try {
+						var login = tokenService.validateToken(token);
+						User user = userService.findByEmail(login);
+						if (user != null) {
+							UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user,
+									null, user.getAuthorities());
+							SecurityContextHolder.getContext().setAuthentication(authentication);
+						}
+					} catch (ResourceNotFoundException e) {
+						response.setContentType("application/json");
+						response.setStatus(HttpStatus.UNAUTHORIZED.value());
+						response.getWriter().write("\"message\":\"" + e.getMessage() + "\"");
+						return;
+					}
 				}
 			}
 		}

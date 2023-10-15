@@ -2,7 +2,6 @@ package br.edu.ifmt.cba.ifmthub;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Base64;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -13,16 +12,19 @@ import org.springframework.stereotype.Component;
 import br.edu.ifmt.cba.ifmthub.model.Category;
 import br.edu.ifmt.cba.ifmthub.model.Course;
 import br.edu.ifmt.cba.ifmthub.model.Post;
+import br.edu.ifmt.cba.ifmthub.model.PostFavorite;
 import br.edu.ifmt.cba.ifmthub.model.Role;
 import br.edu.ifmt.cba.ifmthub.model.Tag;
 import br.edu.ifmt.cba.ifmthub.model.User;
+import br.edu.ifmt.cba.ifmthub.model.compositekeys.PostFavoriteId;
+import br.edu.ifmt.cba.ifmthub.repositories.PostFavoriteRepository;
+import br.edu.ifmt.cba.ifmthub.repositories.PostRepository;
 import br.edu.ifmt.cba.ifmthub.repositories.RoleRepository;
 import br.edu.ifmt.cba.ifmthub.repositories.UserRepository;
 import br.edu.ifmt.cba.ifmthub.services.CategoryService;
 import br.edu.ifmt.cba.ifmthub.services.CourseService;
 import br.edu.ifmt.cba.ifmthub.services.PostService;
 import br.edu.ifmt.cba.ifmthub.services.TagService;
-import br.edu.ifmt.cba.ifmthub.utils.EmailConfirmationEncryption;
 
 @Component
 @Profile("test")
@@ -39,6 +41,9 @@ public class TestCommandLineRunner implements CommandLineRunner {
 
 	@Autowired
 	private PostService postService;
+	
+	@Autowired
+	private PostRepository postRepository;
 
 	@Autowired
 	private RoleRepository roleRepository;
@@ -48,6 +53,9 @@ public class TestCommandLineRunner implements CommandLineRunner {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	
+	@Autowired
+	private PostFavoriteRepository postFavoriteRepository;
 
 	@Override
 	public void run(String... args) throws Exception {
@@ -104,5 +112,20 @@ public class TestCommandLineRunner implements CommandLineRunner {
 		
 		user1.addBookMark(post1);
 		userRepository.save(user1);
+		
+		PostFavoriteId pfi1 = new PostFavoriteId();
+		pfi1.setIdPost(1l);
+		pfi1.setIdUser(1l);
+		
+		Post post_PostFavorite = postRepository.findById(1l).get();
+		PostFavorite pf1 = new PostFavorite();
+		pf1.setUser(user1);
+		pf1.setPost(post_PostFavorite);
+		pf1.setDateCreated(LocalDateTime.now());
+		pf1.setIdPostFavorite(pfi1);
+		postFavoriteRepository.save(pf1);
+		
+		PostFavorite postFavoriteSaved = postFavoriteRepository.findByIdUserAndByIdPost(1l, 1l);
+		//System.out.println(postFavoriteSaved);
 	}
 }

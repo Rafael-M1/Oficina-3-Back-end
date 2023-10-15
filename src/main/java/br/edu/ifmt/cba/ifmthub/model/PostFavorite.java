@@ -62,4 +62,10 @@ public class PostFavorite {
 	public void setDateCreated(LocalDateTime dateCreated) {
 		this.dateCreated = dateCreated;
 	}
+
+	@Override
+	public String toString() {
+		return "PostFavorite [idPostFavorite=" + idPostFavorite + ", user=" + user + ", post=" + post + ", dateCreated="
+				+ dateCreated + "]";
+	}
 }
