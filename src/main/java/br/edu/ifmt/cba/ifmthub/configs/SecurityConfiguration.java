@@ -19,6 +19,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import br.edu.ifmt.cba.ifmthub.utils.AuthorizedRoutes;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
@@ -34,8 +36,8 @@ public class SecurityConfiguration {
                 .headers().frameOptions().sameOrigin().and()
                 .authorizeHttpRequests(authorize -> authorize// .anyRequest().permitAll()
 						.requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register").permitAll()
-						.requestMatchers(HttpMethod.GET, "/auth/confirm/**", "/post/**").permitAll().anyRequest()
-						.authenticated())
+						.requestMatchers(HttpMethod.GET, AuthorizedRoutes.PUBLIC_GET_ROUTES).permitAll()
+						.anyRequest().authenticated())
 				.addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
 				.build();
 	}

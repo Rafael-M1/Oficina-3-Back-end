@@ -126,6 +126,6 @@ public class TestCommandLineRunner implements CommandLineRunner {
 		postFavoriteRepository.save(pf1);
 		
 		PostFavorite postFavoriteSaved = postFavoriteRepository.findByIdUserAndByIdPost(1l, 1l);
-		System.out.println(postFavoriteSaved);
+		//System.out.println(postFavoriteSaved);
 	}
 }
