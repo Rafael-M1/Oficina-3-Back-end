@@ -48,6 +48,7 @@ public interface PostRepository extends JpaRepository<Post, Long>{
 			+ "AND tb_bookmark.id_post = :idPost ",
 			nativeQuery = true)
 	void deleteBookmarkByIdUserByIdPost(Long idUser, Long idPost);
+	
 	@Modifying
 	@Query(value = "insert into tb_bookmark (id_user, id_post) "
 			+ "VALUES (:idUser, :idPost) ",
@@ -58,5 +59,18 @@ public interface PostRepository extends JpaRepository<Post, Long>{
 			+ "JOIN p.usersBookmarks ub "
 			+ "WHERE ub.idUser = :idUser ")
 	List<Post> findAllBookmark(Long idUser);
+
+	@Modifying
+	@Query(value = "delete from post_favorite "
+			+ "WHERE post_favorite.id_user = :idUser "
+			+ "AND post_favorite.id_post = :idPost ",
+			nativeQuery = true)
+	void deleteFavoriteByIdUserByIdPost(Long idUser, Long idPost);
+
+	@Modifying
+	@Query(value = "insert into post_favorite (id_user, id_post) "
+			+ "VALUES (:idUser, :idPost) ",
+			nativeQuery = true)
+	void addFavoriteByIdUserByIdPost(Long idUser, Long idPost);
 
 }

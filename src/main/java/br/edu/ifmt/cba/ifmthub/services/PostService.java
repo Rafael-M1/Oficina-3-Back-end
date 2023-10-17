@@ -154,28 +154,6 @@ public class PostService {
 				countFavorites, countBookmarks);
 	}
 
-	@Transactional
-	public String toggleBookmark(Long idPost) {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		User user = (User) authentication.getPrincipal();
-		if (authentication == null || user == null) {
-			throw new ResourceNotFoundException("User not authenticated.");
-		}
-		if (postRepository.checkIfExistsPost(idPost) != 1) {
-			throw new ResourceNotFoundException("No post present with idPost = " + idPost);
-		}
-		Long idUser = user.getIdUser();
-		Long response = this.postRepository.findBookmark(idUser, idPost);
-		if (response == 1) {
-			this.postRepository.deleteBookmarkByIdUserByIdPost(idUser, idPost);
-			return "Removed Bookmark of idPost = " + idPost + " From idUser = " + idUser + ".";
-		}
-		if (response == 0) {
-			this.postRepository.addBookmarkByIdUserByIdPost(idUser, idPost);
-			return "Added Bookmark of idPost = " + idPost + " From idUser = " + idUser + ".";
-		}
-		throw new IllegalArgumentException();
-	}
 
 	public List<PostResponseDTO> findAllBookmark() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -204,5 +182,50 @@ public class PostService {
 			return (User) authentication.getPrincipal();
 		}
 		return null;
+	}
+	@Transactional
+	public String toggleFavorite(Long idPost) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		User user = (User) authentication.getPrincipal();
+		if (authentication == null || user == null) {
+			throw new ResourceNotFoundException("User not authenticated.");
+		}
+		if (postRepository.checkIfExistsPost(idPost) != 1) {
+			throw new ResourceNotFoundException("No post present with idPost = " + idPost);
+		}
+		Long idUser = user.getIdUser();
+		Long response = this.postRepository.findFavorite(idUser, idPost);
+		if (response == 1) {
+			this.postRepository.deleteFavoriteByIdUserByIdPost(idUser, idPost);
+			return "Removed Favorite of idPost = " + idPost + " From idUser = " + idUser + ".";
+		}
+		if (response == 0) {
+			this.postRepository.addFavoriteByIdUserByIdPost(idUser, idPost);
+			return "Added Favorite of idPost = " + idPost + " From idUser = " + idUser + ".";
+		}
+		throw new IllegalArgumentException();
+	}
+	
+	@Transactional
+	public String toggleBookmark(Long idPost) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		User user = (User) authentication.getPrincipal();
+		if (authentication == null || user == null) {
+			throw new ResourceNotFoundException("User not authenticated.");
+		}
+		if (postRepository.checkIfExistsPost(idPost) != 1) {
+			throw new ResourceNotFoundException("No post present with idPost = " + idPost);
+		}
+		Long idUser = user.getIdUser();
+		Long response = this.postRepository.findBookmark(idUser, idPost);
+		if (response == 1) {
+			this.postRepository.deleteBookmarkByIdUserByIdPost(idUser, idPost);
+			return "Removed Bookmark of idPost = " + idPost + " From idUser = " + idUser + ".";
+		}
+		if (response == 0) {
+			this.postRepository.addBookmarkByIdUserByIdPost(idUser, idPost);
+			return "Added Bookmark of idPost = " + idPost + " From idUser = " + idUser + ".";
+		}
+		throw new IllegalArgumentException();
 	}
 }

@@ -65,4 +65,9 @@ public class PostResource {
 		return new ResponseEntity<Map<String, Object>>(Map.of("message", response), HttpStatus.CREATED);
 	}
 
+	@PostMapping("/favorite/{idPost}")
+	public ResponseEntity<Map<String, Object>> toggleFavorite(@PathVariable Long idPost) {
+		String response = this.postService.toggleFavorite(idPost);
+		return new ResponseEntity<Map<String, Object>>(Map.of("message", response), HttpStatus.CREATED);
+	}
 }
