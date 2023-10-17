@@ -2,6 +2,7 @@ package br.edu.ifmt.cba.ifmthub.services;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -34,6 +35,11 @@ public class UserService implements UserDetailsService {
 	public User findByEmail(String email) {
 		return userRepository.findByEmail(email)
 				.orElseThrow(() -> new ResourceNotFoundException("Invalid Credentials"));
+	}
+	
+	@Transactional
+	public Optional<User> findByEmailOptional(String email) {
+		return userRepository.findByEmail(email);
 	}
 
 	public List<User> findAll() {

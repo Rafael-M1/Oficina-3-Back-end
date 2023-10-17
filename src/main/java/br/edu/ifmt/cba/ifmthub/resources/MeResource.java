@@ -18,6 +18,11 @@ public class MeResource {
 	@GetMapping("/me")
 	public ResponseEntity<UserDTO> getLoggedInUserInfo() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication.getPrincipal().equals("anonymousUser")) {
+			User user = new User();
+			user.setFullName("anonymousUser");
+			return new ResponseEntity<UserDTO>(new UserDTO(user), HttpStatus.OK);
+		}
 		User user = (User) authentication.getPrincipal();
 		UserDTO userDTO = new UserDTO(user);
 		return new ResponseEntity<UserDTO>(userDTO, HttpStatus.OK);
