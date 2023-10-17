@@ -86,7 +86,19 @@ public class PostService {
 	}
 
 	public List<PostResponseDTO> findAll() {
-		return postRepository.findAll().stream().map(post -> new PostResponseDTO(post)).collect(Collectors.toList());
+		final User loggedInUser = getLoggedInUser();
+		return postRepository.findAll().stream().map(post -> {
+			Long isFavorited = loggedInUser != null
+					? postRepository.findFavorite(loggedInUser.getIdUser(), post.getIdPost())
+					: 0l;
+			Long isBookmarked = loggedInUser != null
+					? postRepository.findBookmark(loggedInUser.getIdUser(), post.getIdPost())
+					: 0l;
+			Long countFavorites = postRepository.countFavorites(post.getIdPost());
+			Long countBookmarks = postRepository.countBookmarks(post.getIdPost());
+			return new PostResponseDTO(post, isBookmarked == 1 ? true : false, isFavorited == 1 ? true : false,
+					countFavorites, countBookmarks);
+		}).collect(Collectors.toList());
 	}
 
 	public Post update(Post post) {
@@ -108,18 +120,38 @@ public class PostService {
 	}
 
 	public List<PostResponseDTO> findAllFilteredByQueryText(String query) {
-		return postRepository.findAllFilteredByQueryText(query).stream().map(post -> new PostResponseDTO(post))
-				.collect(Collectors.toList());
+		final User loggedInUser = getLoggedInUser();
+		return postRepository.findAllFilteredByQueryText(query).stream().map(post -> {
+			Long isFavorited = loggedInUser != null
+					? postRepository.findFavorite(loggedInUser.getIdUser(), post.getIdPost())
+					: 0l;
+			Long isBookmarked = loggedInUser != null
+					? postRepository.findBookmark(loggedInUser.getIdUser(), post.getIdPost())
+					: 0l;
+			Long countFavorites = postRepository.countFavorites(post.getIdPost());
+			Long countBookmarks = postRepository.countBookmarks(post.getIdPost());
+			return new PostResponseDTO(post, isBookmarked == 1 ? true : false, isFavorited == 1 ? true : false,
+					countFavorites, countBookmarks);
+		}).collect(Collectors.toList());
 	}
 
 	public PostResponseWithCommentsDTO findByIdWithComments(Long idPost) {
+		Long isFavorited = 0l;
+		Long isBookmarked = 0l;
 		Post post = postRepository.findById(idPost)
 				.orElseThrow(() -> new ResourceNotFoundException("No post present with idPost = " + idPost));
+
 		boolean isUserAnonymous = LoggedInUserUtils.checkIfUserIsAnonymous();
 		if (!isUserAnonymous) {
-			return null;
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			User loggedInUser = (User) authentication.getPrincipal();
+			isFavorited = postRepository.findFavorite(loggedInUser.getIdUser(), idPost);
+			isBookmarked = postRepository.findBookmark(loggedInUser.getIdUser(), idPost);
 		}
-		return new PostResponseWithCommentsDTO(post, false, false);
+		Long countFavorites = postRepository.countFavorites(idPost);
+		Long countBookmarks = postRepository.countBookmarks(idPost);
+		return new PostResponseWithCommentsDTO(post, isBookmarked == 1 ? true : false, isFavorited == 1 ? true : false,
+				countFavorites, countBookmarks);
 	}
 
 	@Transactional
@@ -147,11 +179,30 @@ public class PostService {
 
 	public List<PostResponseDTO> findAllBookmark() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		User user = (User) authentication.getPrincipal();
-		if (authentication == null || user == null) {
+		final User loggedInUser = (User) authentication.getPrincipal();
+		if (authentication == null || loggedInUser == null) {
 			throw new ResourceNotFoundException("User not authenticated.");
 		}
-		return postRepository.findAllBookmark(user.getIdUser()).stream().map(post -> new PostResponseDTO(post))
-				.collect(Collectors.toList());
+		return postRepository.findAllBookmark(loggedInUser.getIdUser()).stream().map(post -> {
+			Long isFavorited = loggedInUser != null
+					? postRepository.findFavorite(loggedInUser.getIdUser(), post.getIdPost())
+					: 0l;
+			Long isBookmarked = loggedInUser != null
+					? postRepository.findBookmark(loggedInUser.getIdUser(), post.getIdPost())
+					: 0l;
+			Long countFavorites = postRepository.countFavorites(post.getIdPost());
+			Long countBookmarks = postRepository.countBookmarks(post.getIdPost());
+			return new PostResponseDTO(post, isBookmarked == 1 ? true : false, isFavorited == 1 ? true : false,
+					countFavorites, countBookmarks);
+		}).collect(Collectors.toList());
+	}
+	
+
+	public User getLoggedInUser() {
+		if (!LoggedInUserUtils.checkIfUserIsAnonymous()) {
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			return (User) authentication.getPrincipal();
+		}
+		return null;
 	}
 }

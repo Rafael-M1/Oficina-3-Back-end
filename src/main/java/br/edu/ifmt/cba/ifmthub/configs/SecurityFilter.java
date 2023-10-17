@@ -1,6 +1,7 @@
 package br.edu.ifmt.cba.ifmthub.configs;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,7 +11,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import br.edu.ifmt.cba.ifmthub.model.User;
-import br.edu.ifmt.cba.ifmthub.resources.exceptions.ResourceNotFoundException;
 import br.edu.ifmt.cba.ifmthub.services.UserService;
 import br.edu.ifmt.cba.ifmthub.utils.AuthorizedRoutes;
 import jakarta.servlet.FilterChain;
@@ -44,24 +44,23 @@ public class SecurityFilter extends OncePerRequestFilter {
 			}
 		}
 		
-		if (!isPublic) {
-			var token = this.recoverToken(request);
-			if (token != null) {
-				if (!request.getRequestURI().equals("/auth/login")) {
-					try {
-						var login = tokenService.validateToken(token);
-						User user = userService.findByEmail(login);
-						if (user != null) {
-							UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user,
-									null, user.getAuthorities());
-							SecurityContextHolder.getContext().setAuthentication(authentication);
-						}
-					} catch (ResourceNotFoundException e) {
-						response.setContentType("application/json");
-						response.setStatus(HttpStatus.UNAUTHORIZED.value());
-						response.getWriter().write("\"message\":\"" + e.getMessage() + "\"");
-						return;
-					}
+		var token = this.recoverToken(request);
+		if (token != null) {
+			if (!request.getRequestURI().equals("/auth/login")) {
+				var login = tokenService.validateToken(token);
+				Optional<User> userOpt = userService.findByEmailOptional(login);
+				if (userOpt.isPresent()) {
+					User user = userOpt.get();
+					UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user,
+							null, user.getAuthorities());
+					SecurityContextHolder.getContext().setAuthentication(authentication);
+				} else if (isPublic) {
+					SecurityContextHolder.getContext().setAuthentication(null);
+				} else {
+					response.setContentType("application/json");
+					response.setStatus(HttpStatus.UNAUTHORIZED.value());
+					response.getWriter().write("\"message\":\"" + "Unauthorized" + "\"");
+					return;					
 				}
 			}
 		}

@@ -10,8 +10,7 @@ public class LoggedInUserUtils {
 	 */
 	public static boolean checkIfUserIsAnonymous() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication != null && (authentication.getName().equals("anonymousUser") || authentication
-				.getAuthorities().stream().anyMatch(role -> role.getAuthority().equals("ROLE_ANONYMOUS")))) {
+		if (authentication.getPrincipal().equals("anonymousUser")) {
 			return true;
 		}
 		return false;

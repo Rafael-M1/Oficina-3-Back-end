@@ -20,6 +20,8 @@ public class PostResponseDTO {
 	private boolean status;
 	private boolean bookmarked;
 	private boolean favorited;
+	private Long countFavorites;
+	private Long countBookmarks;
 
 	public PostResponseDTO() {
 	}
@@ -37,10 +39,13 @@ public class PostResponseDTO {
 		this.status = post.isStatus();
 	}
 	
-	public PostResponseDTO(Post post, boolean bookmarked, boolean favorited) {
+	public PostResponseDTO(Post post, boolean bookmarked, boolean favorited,
+			Long countFavorites, Long countBookmarks) {
 		this(post);
 		this.bookmarked = bookmarked;
 		this.favorited = favorited;
+		this.countFavorites = countFavorites;
+		this.countBookmarks = countBookmarks;
 	}
 
 	public Long getIdPost() {
@@ -91,11 +96,20 @@ public class PostResponseDTO {
 		return favorited;
 	}
 
+	public Long getCountFavorites() {
+		return countFavorites;
+	}
+
+	public Long getCountBookmarks() {
+		return countBookmarks;
+	}
+
 	@Override
 	public String toString() {
 		return "PostResponseDTO [idPost=" + idPost + ", author=" + author + ", category=" + category + ", tags=" + tags
 				+ ", title=" + title + ", subtitle=" + subtitle + ", content=" + content + ", dateCreated="
 				+ dateCreated + ", urlImgPost=" + urlImgPost + ", status=" + status + ", bookmarked=" + bookmarked
-				+ ", favorited=" + favorited + "]";
+				+ ", favorited=" + favorited + ", countFavorites=" + countFavorites + ", countBookmarks="
+				+ countBookmarks + "]";
 	}
 }

@@ -21,6 +21,22 @@ public interface PostRepository extends JpaRepository<Post, Long>{
 			nativeQuery = true)
 	Long findBookmark(Long idUser, Long idPost);
 	
+	@Query(value = "SELECT count(1) FROM tb_bookmark "
+			+ "WHERE tb_bookmark.id_post = :idPost ",
+			nativeQuery = true)
+	Long countBookmarks(Long idPost);
+	
+	@Query(value = "SELECT count(1) FROM post_favorite "
+			+ "WHERE post_favorite.id_user = :idUser "
+			+ "AND post_favorite.id_post = :idPost ",
+			nativeQuery = true)
+	Long findFavorite(Long idUser, Long idPost);
+	
+	@Query(value = "SELECT count(1) FROM post_favorite "
+			+ "WHERE post_favorite.id_post = :idPost ",
+			nativeQuery = true)
+	Long countFavorites(Long idPost);
+	
 	@Query(value = "SELECT count(1) FROM post "
 			+ "WHERE post.id_post = :idPost ",
 			nativeQuery = true)
