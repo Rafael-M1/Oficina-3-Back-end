@@ -99,7 +99,7 @@ public class AuthResource {
 	@Transactional
 	@PostMapping(value = "/register", consumes = { "multipart/form-data" })
 	public ResponseEntity register(@RequestParam(value = "data") @Valid String data,
-			@RequestParam(value = "file") MultipartFile file) {	
+			@RequestParam(value = "file", required = false) MultipartFile file) {	
 		try {
 			ObjectMapper objectMapper = new ObjectMapper();
 			RegisterDTO registerObject = objectMapper.readValue(data, RegisterDTO.class);
@@ -110,8 +110,10 @@ public class AuthResource {
 			String encryptedPassword = passwordEncoder.encode(registerObject.getPassword());
 			User newUser = new User();
 			newUser.setPassword(encryptedPassword);
-			byte[] userPhoto = file.getBytes();
-			newUser.setPhoto(userPhoto);
+			if (file != null) {				
+				byte[] userPhoto = file.getBytes();
+				newUser.setPhoto(userPhoto);
+			}
 			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 			LocalDate userBirthDate = LocalDate.parse(registerObject.getBirthDate(), dtf);
 			newUser.setBirthDate(userBirthDate);
