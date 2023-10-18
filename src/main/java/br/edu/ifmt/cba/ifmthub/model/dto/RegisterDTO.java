@@ -1,13 +1,8 @@
 package br.edu.ifmt.cba.ifmthub.model.dto;
 
-import java.time.LocalDate;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
@@ -23,11 +18,11 @@ public class RegisterDTO {
 	@Pattern(message = "Values allowed: ['M', 'F']", regexp = "\\b(M|F)\\b")
 	@NotNull(message = "Must not be null")
 	private String gender;
-	@Past
+	//@Past
+	//@JsonFormat(pattern = "dd/MM/yyyy")
+	@Pattern(message = "Value allowed: dd/MM/yyyy", regexp = "^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/\\d{4}$")
 	@NotNull(message = "Must not be null")
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	private LocalDate birthDate;
-	private String urlImgProfile;
+	private String birthDate;
 
 	public String getEmail() {
 		return email;
@@ -45,17 +40,13 @@ public class RegisterDTO {
 		return gender;
 	}
 
-	public LocalDate getBirthDate() {
+	public String getBirthDate() {
 		return birthDate;
-	}
-
-	public String getUrlImgProfile() {
-		return urlImgProfile;
 	}
 
 	@Override
 	public String toString() {
 		return "RegisterDTO [email=" + email + ", password=" + password + ", fullName=" + fullName + ", gender="
-				+ gender + ", birthDate=" + birthDate + ", urlImgProfile=" + urlImgProfile + "]";
+				+ gender + ", birthDate=" + birthDate + "]";
 	}
 }

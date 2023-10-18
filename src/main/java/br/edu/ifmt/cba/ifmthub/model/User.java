@@ -20,6 +20,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
@@ -67,6 +68,10 @@ public class User implements UserDetails, Serializable {
 				joinColumns = @JoinColumn(name = "id_user"),
 				inverseJoinColumns = @JoinColumn(name = "id_post"))
 	private Set<Post> bookmarks = new HashSet<>();
+	
+	@Lob
+	@Column(name = "photo", columnDefinition = "BLOB")
+	private byte[] photo;
 	
 	public User() {
 	}
@@ -175,6 +180,14 @@ public class User implements UserDetails, Serializable {
 
 	public void setAccountConfirmed(boolean isAccountConfirmed) {
 		this.isAccountConfirmed = isAccountConfirmed;
+	}
+
+	public byte[] getPhoto() {
+		return photo;
+	}
+
+	public void setPhoto(byte[] photo) {
+		this.photo = photo;
 	}
 
 	@Override

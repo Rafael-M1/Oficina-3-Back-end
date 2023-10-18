@@ -2,6 +2,7 @@ package br.edu.ifmt.cba.ifmthub.model.dto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 import br.edu.ifmt.cba.ifmthub.model.User;
 
@@ -12,7 +13,7 @@ public class UserDTO {
 	private String gender;
 	private LocalDateTime dateCreated;
 	private LocalDate birthDate;
-	private String urlImgProfile;
+	private byte[] photo;
 	
 	public UserDTO() {
 	}
@@ -24,8 +25,7 @@ public class UserDTO {
 		this.gender = user.getGender();
 		this.dateCreated = user.getDateCreated();
 		this.birthDate = user.getBirthDate();
-		this.urlImgProfile = user.getUrlImgProfile();
-
+		this.photo = user.getPhoto();
 	}
 
 	public Long getIdUser() {
@@ -76,18 +76,18 @@ public class UserDTO {
 		this.birthDate = birthDate;
 	}
 
-	public String getUrlImgProfile() {
-		return urlImgProfile;
+	public byte[] getPhoto() {
+		return photo;
 	}
 
-	public void setUrlImgProfile(String urlImgProfile) {
-		this.urlImgProfile = urlImgProfile;
+	public void setPhoto(byte[] photo) {
+		this.photo = photo;
 	}
 
 	@Override
 	public String toString() {
 		return "UserDTO [idUser=" + idUser + ", email=" + email + ", fullName=" + fullName + ", gender=" + gender
-				+ ", dateCreated=" + dateCreated + ", birthDate=" + birthDate + ", urlImgProfile=" + urlImgProfile
+				+ ", dateCreated=" + dateCreated + ", birthDate=" + birthDate + ", photo=" + Arrays.toString(photo)
 				+ "]";
 	}
 }

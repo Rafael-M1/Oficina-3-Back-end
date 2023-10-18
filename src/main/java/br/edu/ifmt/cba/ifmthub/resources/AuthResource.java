@@ -1,11 +1,16 @@
 package br.edu.ifmt.cba.ifmthub.resources;
 
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +26,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.Response;
@@ -35,6 +44,7 @@ import br.edu.ifmt.cba.ifmthub.model.Role;
 import br.edu.ifmt.cba.ifmthub.model.User;
 import br.edu.ifmt.cba.ifmthub.model.dto.LoginRequestDTO;
 import br.edu.ifmt.cba.ifmthub.model.dto.RegisterDTO;
+import br.edu.ifmt.cba.ifmthub.model.dto.UserDTO;
 import br.edu.ifmt.cba.ifmthub.repositories.RoleRepository;
 import br.edu.ifmt.cba.ifmthub.repositories.UserRepository;
 import br.edu.ifmt.cba.ifmthub.utils.EmailConfirmationEncryption;
@@ -87,27 +97,43 @@ public class AuthResource {
 	}
 
 	@Transactional
-	@PostMapping("/register")
-	public ResponseEntity register(@RequestBody @Valid RegisterDTO data) {
-		if (this.repository.findByEmail(data.getEmail()) != null) {
-			return ResponseEntity.badRequest().body(Map.of("message", "An account with this E-mail already exists."));
+	@PostMapping(value = "/register", consumes = { "multipart/form-data" })
+	public ResponseEntity register(@RequestParam(value = "data") @Valid String data,
+			@RequestParam(value = "file") MultipartFile file) {	
+		try {
+			ObjectMapper objectMapper = new ObjectMapper();
+			RegisterDTO registerObject = objectMapper.readValue(data, RegisterDTO.class);
+			Optional<User> userOpt = this.repository.findByEmail(registerObject.getEmail());
+			if (userOpt.isPresent()) {
+				return ResponseEntity.badRequest().body(Map.of("message", "An account with this E-mail already exists."));
+			}
+			String encryptedPassword = passwordEncoder.encode(registerObject.getPassword());
+			User newUser = new User();
+			newUser.setPassword(encryptedPassword);
+			byte[] userPhoto = file.getBytes();
+			newUser.setPhoto(userPhoto);
+			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+			LocalDate userBirthDate = LocalDate.parse(registerObject.getBirthDate(), dtf);
+			newUser.setBirthDate(userBirthDate);
+			newUser.setDateCreated(LocalDateTime.now());
+			newUser.setEmail(registerObject.getEmail());
+			newUser.setFullName(registerObject.getFullName());
+			newUser.setGender(registerObject.getGender());
+			newUser.setStatus(true);
+			newUser.setAccountConfirmed(false);
+			Role role = roleRepository.findByAuthority("ROLE_STUDENT");
+			newUser.addRole(role);
+			this.repository.save(newUser);
+			sendConfirmationEmail(newUser);
+			
+			return ResponseEntity.ok().body(new UserDTO(newUser));
+		} catch (JsonMappingException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		} catch (JsonProcessingException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		} catch (IOException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
-		String encryptedPassword = passwordEncoder.encode(data.getPassword());
-		User newUser = new User();
-		newUser.setPassword(encryptedPassword);
-		newUser.setBirthDate(data.getBirthDate());
-		newUser.setDateCreated(LocalDateTime.now());
-		newUser.setEmail(data.getEmail());
-		newUser.setFullName(data.getFullName());
-		newUser.setGender(data.getGender());
-		newUser.setStatus(true);
-		newUser.setAccountConfirmed(false);
-		newUser.setUrlImgProfile(data.getUrlImgProfile());
-		Role role = roleRepository.findByAuthority("ROLE_STUDENT");
-		newUser.addRole(role);
-		this.repository.save(newUser);
-		sendConfirmationEmail(newUser);
-		return ResponseEntity.ok().build();
 	}
 
 	@GetMapping("/confirm")
