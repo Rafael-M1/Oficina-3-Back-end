@@ -24,7 +24,7 @@ public class PostView {
 	@JoinColumn(name = "id_post", foreignKey = @ForeignKey(name = "fk_post_view_post"))
 	private Post post;
 	@ManyToOne
-	@JoinColumn(name = "id_user", foreignKey = @ForeignKey(name = "fk_post_view_user"))
+	@JoinColumn(name = "id_user", foreignKey = @ForeignKey(name = "fk_post_view_user"), nullable = true)
 	private User viewer;
 	@Column(name = "date_created")
 	private LocalDateTime dateCreated;

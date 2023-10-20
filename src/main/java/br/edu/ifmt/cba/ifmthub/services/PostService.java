@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import br.edu.ifmt.cba.ifmthub.model.Category;
 import br.edu.ifmt.cba.ifmthub.model.Post;
+import br.edu.ifmt.cba.ifmthub.model.PostView;
 import br.edu.ifmt.cba.ifmthub.model.Tag;
 import br.edu.ifmt.cba.ifmthub.model.User;
 import br.edu.ifmt.cba.ifmthub.model.dto.PostInsertDTO;
@@ -23,6 +24,7 @@ import br.edu.ifmt.cba.ifmthub.model.dto.PostResponseWithCommentsDTO;
 import br.edu.ifmt.cba.ifmthub.model.dto.TagDTO;
 import br.edu.ifmt.cba.ifmthub.repositories.CategoryRepository;
 import br.edu.ifmt.cba.ifmthub.repositories.PostRepository;
+import br.edu.ifmt.cba.ifmthub.repositories.PostViewRepository;
 import br.edu.ifmt.cba.ifmthub.repositories.TagRepository;
 import br.edu.ifmt.cba.ifmthub.resources.exceptions.ResourceNotFoundException;
 import br.edu.ifmt.cba.ifmthub.utils.LoggedInUserUtils;
@@ -37,6 +39,9 @@ public class PostService {
 
 	@Autowired
 	private TagRepository tagRepository;
+	
+	@Autowired
+	private PostViewRepository postViewRepository;
 
 	public Post save(Post post) {
 		post.setDateCreated(LocalDateTime.now());
@@ -153,12 +158,18 @@ public class PostService {
 				.orElseThrow(() -> new ResourceNotFoundException("No post present with idPost = " + idPost));
 
 		boolean isUserAnonymous = LoggedInUserUtils.checkIfUserIsAnonymous();
+		PostView postView = new PostView();
+		postView.setDateCreated(LocalDateTime.now());
+		postView.setPost(post);
 		if (!isUserAnonymous) {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			User loggedInUser = (User) authentication.getPrincipal();
 			isFavorited = postRepository.findFavorite(loggedInUser.getIdUser(), idPost);
 			isBookmarked = postRepository.findBookmark(loggedInUser.getIdUser(), idPost);
+			
+			postView.setViewer(loggedInUser);
 		}
+		postViewRepository.save(postView);
 		Long countFavorites = postRepository.countFavorites(idPost);
 		Long countBookmarks = postRepository.countBookmarks(idPost);
 		return new PostResponseWithCommentsDTO(post, isBookmarked == 1 ? true : false, isFavorited == 1 ? true : false,
