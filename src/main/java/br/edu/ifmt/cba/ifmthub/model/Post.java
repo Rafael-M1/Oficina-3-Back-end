@@ -51,6 +51,9 @@ public class Post {
 	
 	@ManyToMany(mappedBy = "bookmarks")
 	private Set<User> usersBookmarks = new HashSet<>();
+	
+	@Column(name = "photo", columnDefinition = "bytea")
+	private byte[] photo;
 
 	public Post() {
 	}
@@ -156,5 +159,13 @@ public class Post {
 
 	public void setComments(List<Comment> comments) {
 		this.comments = comments;
+	}
+	
+	public byte[] getPhoto() {
+		return photo;
+	}
+
+	public void setPhoto(byte[] photo) {
+		this.photo = photo;
 	}
 }

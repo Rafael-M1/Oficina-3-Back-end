@@ -1,5 +1,6 @@
 package br.edu.ifmt.cba.ifmthub.services;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -10,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import br.edu.ifmt.cba.ifmthub.model.Category;
 import br.edu.ifmt.cba.ifmthub.model.Post;
@@ -42,8 +44,17 @@ public class PostService {
 		return postRepository.save(post);
 	}
 
-	public Post save(PostInsertDTO postInsertDTO) {
+	@Transactional
+	public Post save(PostInsertDTO postInsertDTO, MultipartFile file) {
+		if (file.getSize() > 1048576) {
+			throw new IllegalArgumentException("File exceeds its maximum permitted of 1048576 bytes.");
+		}
 		Post post = new Post();
+		try {
+			post.setPhoto(file.getBytes());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		User author = (User) authentication.getPrincipal();
 		if (authentication == null || author == null) {
@@ -97,7 +108,7 @@ public class PostService {
 			Long countFavorites = postRepository.countFavorites(post.getIdPost());
 			Long countBookmarks = postRepository.countBookmarks(post.getIdPost());
 			return new PostResponseDTO(post, isBookmarked == 1 ? true : false, isFavorited == 1 ? true : false,
-					countFavorites, countBookmarks);
+					countFavorites, countBookmarks, post.getPhoto());
 		}).collect(Collectors.toList());
 	}
 
@@ -131,7 +142,7 @@ public class PostService {
 			Long countFavorites = postRepository.countFavorites(post.getIdPost());
 			Long countBookmarks = postRepository.countBookmarks(post.getIdPost());
 			return new PostResponseDTO(post, isBookmarked == 1 ? true : false, isFavorited == 1 ? true : false,
-					countFavorites, countBookmarks);
+					countFavorites, countBookmarks, post.getPhoto());
 		}).collect(Collectors.toList());
 	}
 
@@ -151,7 +162,7 @@ public class PostService {
 		Long countFavorites = postRepository.countFavorites(idPost);
 		Long countBookmarks = postRepository.countBookmarks(idPost);
 		return new PostResponseWithCommentsDTO(post, isBookmarked == 1 ? true : false, isFavorited == 1 ? true : false,
-				countFavorites, countBookmarks);
+				countFavorites, countBookmarks, post.getPhoto());
 	}
 
 
@@ -171,7 +182,7 @@ public class PostService {
 			Long countFavorites = postRepository.countFavorites(post.getIdPost());
 			Long countBookmarks = postRepository.countBookmarks(post.getIdPost());
 			return new PostResponseDTO(post, isBookmarked == 1 ? true : false, isFavorited == 1 ? true : false,
-					countFavorites, countBookmarks);
+					countFavorites, countBookmarks, post.getPhoto());
 		}).collect(Collectors.toList());
 	}
 	

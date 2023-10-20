@@ -22,6 +22,7 @@ public class PostResponseDTO {
 	private boolean favorited;
 	private Long countFavorites;
 	private Long countBookmarks;
+	private byte[] photo;
 
 	public PostResponseDTO() {
 	}
@@ -40,12 +41,13 @@ public class PostResponseDTO {
 	}
 	
 	public PostResponseDTO(Post post, boolean bookmarked, boolean favorited,
-			Long countFavorites, Long countBookmarks) {
+			Long countFavorites, Long countBookmarks, byte[] photo) {
 		this(post);
 		this.bookmarked = bookmarked;
 		this.favorited = favorited;
 		this.countFavorites = countFavorites;
 		this.countBookmarks = countBookmarks;
+		this.photo = photo;
 	}
 
 	public Long getIdPost() {
@@ -102,6 +104,10 @@ public class PostResponseDTO {
 
 	public Long getCountBookmarks() {
 		return countBookmarks;
+	}
+
+	public byte[] getPhoto() {
+		return photo;
 	}
 
 	@Override
