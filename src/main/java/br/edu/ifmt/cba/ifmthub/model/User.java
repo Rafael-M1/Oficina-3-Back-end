@@ -20,7 +20,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
@@ -69,8 +68,7 @@ public class User implements UserDetails, Serializable {
 				inverseJoinColumns = @JoinColumn(name = "id_post"))
 	private Set<Post> bookmarks = new HashSet<>();
 	
-	@Lob
-	@Column(name = "photo", columnDefinition = "BLOB")
+	@Column(name = "photo", columnDefinition = "bytea")
 	private byte[] photo;
 	
 	public User() {
