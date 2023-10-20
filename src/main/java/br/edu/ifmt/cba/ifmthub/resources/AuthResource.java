@@ -6,12 +6,12 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -53,6 +53,9 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping(value = "/auth")
 public class AuthResource {
+	
+	private static Logger logger = LogManager.getLogger(AuthResource.class);
+	
 	@Value("${sendgrid.api.key}")
 	private String sendgridApiKey;
 
@@ -84,6 +87,7 @@ public class AuthResource {
 			if (user.isAccountConfirmed()) {
 				var token = tokenService.generateToken(user);
 				response.put("token", token);
+				logger.info("User Logged in: User[" + user.getEmail() + ", " + user.getFullName() + "]");
 				return ResponseEntity.ok(response);
 			} else {
 				response.put("message", "Account not confirmed");
