@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import br.edu.ifmt.cba.ifmthub.model.Post;
 import br.edu.ifmt.cba.ifmthub.model.dto.PostInsertDTO;
 import br.edu.ifmt.cba.ifmthub.model.dto.PostResponseDTO;
 import br.edu.ifmt.cba.ifmthub.model.dto.PostResponseWithCommentsDTO;
@@ -42,9 +43,9 @@ public class PostResource {
 		} catch (JsonProcessingException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
-		
-		PostResponseDTO postSaved = new PostResponseDTO(this.postService.save(postInsertDTOObject, file));
-		return new ResponseEntity<PostResponseDTO>(postSaved, HttpStatus.CREATED);
+		Post postSaved = this.postService.save(postInsertDTOObject, file);
+		PostResponseDTO postResponse = new PostResponseDTO(postSaved, postSaved.getPhoto());
+		return new ResponseEntity<PostResponseDTO>(postResponse, HttpStatus.CREATED);
 	}
 
 	@GetMapping("/filter")

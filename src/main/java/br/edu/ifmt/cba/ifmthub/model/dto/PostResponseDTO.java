@@ -40,6 +40,11 @@ public class PostResponseDTO {
 		this.status = post.isStatus();
 	}
 	
+	public PostResponseDTO(Post post, byte[] photo) {
+		this(post);
+		this.photo = photo;
+	}
+	
 	public PostResponseDTO(Post post, boolean bookmarked, boolean favorited,
 			Long countFavorites, Long countBookmarks, byte[] photo) {
 		this(post);
