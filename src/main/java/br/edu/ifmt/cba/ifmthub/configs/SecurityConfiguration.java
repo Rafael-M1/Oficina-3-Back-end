@@ -35,7 +35,7 @@ public class SecurityConfiguration {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .headers().frameOptions().sameOrigin().and()
                 .authorizeHttpRequests(authorize -> authorize// .anyRequest().permitAll()
-						.requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register").permitAll()
+						.requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register/**").permitAll()
 						.requestMatchers(HttpMethod.GET, AuthorizedRoutes.PUBLIC_GET_ROUTES).permitAll()
 						.anyRequest().authenticated())
 				.addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
