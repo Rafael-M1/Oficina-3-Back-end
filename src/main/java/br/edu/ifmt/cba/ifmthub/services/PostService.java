@@ -48,18 +48,32 @@ public class PostService {
 		post.setStatus(true);
 		return postRepository.save(post);
 	}
-
-	@Transactional
-	public Post save(PostInsertDTO postInsertDTO, MultipartFile file) {
+	
+	public Post saveImageInPost(MultipartFile file, Long idPost) {
 		if (file.getSize() > 1048576) {
 			throw new IllegalArgumentException("File exceeds its maximum permitted of 1048576 bytes.");
 		}
-		Post post = new Post();
+		Post post = postRepository.findById(idPost)
+				.orElseThrow(() -> new ResourceNotFoundException("No post present with idPost = " + idPost));
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		User loggedInUser = (User) authentication.getPrincipal();
+		if (authentication == null || loggedInUser == null) {
+			throw new ResourceNotFoundException("User not authenticated.");
+		}
+		if (!post.getAuthor().getIdUser().equals(loggedInUser.getIdUser())) {
+			throw new ResourceNotFoundException("Current user cannot change this post.");
+		}
 		try {
 			post.setPhoto(file.getBytes());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		return postRepository.save(post);
+	}
+
+	@Transactional
+	public Post save(PostInsertDTO postInsertDTO) {
+		Post post = new Post();
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		User author = (User) authentication.getPrincipal();
 		if (authentication == null || author == null) {
@@ -250,4 +264,5 @@ public class PostService {
 		}
 		throw new IllegalArgumentException();
 	}
+
 }

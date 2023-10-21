@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,17 +34,18 @@ public class PostResource {
 	private PostService postService;
 
 	@Transactional
-	@PostMapping(consumes = { "multipart/form-data" })
-	public ResponseEntity save(@RequestParam(value = "data") @Valid String postInsertDTO,
-			@RequestParam(value = "file", required = true) MultipartFile file) {
-		ObjectMapper objectMapper = new ObjectMapper();
-		PostInsertDTO postInsertDTOObject;
-		try {
-			postInsertDTOObject = objectMapper.readValue(postInsertDTO, PostInsertDTO.class);
-		} catch (JsonProcessingException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-		}
-		Post postSaved = this.postService.save(postInsertDTOObject, file);
+	@PostMapping()
+	public ResponseEntity save(@RequestBody @Valid PostInsertDTO postInsertDTO) {
+		Post postSaved = this.postService.save(postInsertDTO);
+		PostResponseDTO postResponse = new PostResponseDTO(postSaved, postSaved.getPhoto());
+		return new ResponseEntity<PostResponseDTO>(postResponse, HttpStatus.CREATED);
+	}
+	
+	@Transactional
+	@PostMapping(consumes = { "multipart/form-data" }, value = "/{idPost}")
+	public ResponseEntity saveImageInPost(@RequestParam(value = "file", required = true) MultipartFile file,
+			@PathVariable Long idPost) {
+		Post postSaved = this.postService.saveImageInPost(file, idPost);
 		PostResponseDTO postResponse = new PostResponseDTO(postSaved, postSaved.getPhoto());
 		return new ResponseEntity<PostResponseDTO>(postResponse, HttpStatus.CREATED);
 	}
