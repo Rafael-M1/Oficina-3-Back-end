@@ -23,6 +23,7 @@ import br.edu.ifmt.cba.ifmthub.model.Post;
 import br.edu.ifmt.cba.ifmthub.model.dto.PostInsertDTO;
 import br.edu.ifmt.cba.ifmthub.model.dto.PostResponseDTO;
 import br.edu.ifmt.cba.ifmthub.model.dto.PostResponseWithCommentsDTO;
+import br.edu.ifmt.cba.ifmthub.model.dto.PostTendencyDTO;
 import br.edu.ifmt.cba.ifmthub.services.PostService;
 import jakarta.validation.Valid;
 
@@ -68,6 +69,12 @@ public class PostResource {
 	public ResponseEntity<List<PostResponseDTO>> findAllBookmark() {
 		List<PostResponseDTO> postList = this.postService.findAllBookmark();
 		return new ResponseEntity<List<PostResponseDTO>>(postList, HttpStatus.OK);
+	}
+	
+	@GetMapping("/tendency")
+	public ResponseEntity<List<PostTendencyDTO>> findTendencyPosts() {
+		List<PostTendencyDTO> postList = this.postService.findTendencyPosts();
+		return new ResponseEntity<List<PostTendencyDTO>>(postList, HttpStatus.OK);
 	}
 
 	@GetMapping("/{idPost}")

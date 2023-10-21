@@ -2,6 +2,8 @@ package br.edu.ifmt.cba.ifmthub.services;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,6 +23,7 @@ import br.edu.ifmt.cba.ifmthub.model.User;
 import br.edu.ifmt.cba.ifmthub.model.dto.PostInsertDTO;
 import br.edu.ifmt.cba.ifmthub.model.dto.PostResponseDTO;
 import br.edu.ifmt.cba.ifmthub.model.dto.PostResponseWithCommentsDTO;
+import br.edu.ifmt.cba.ifmthub.model.dto.PostTendencyDTO;
 import br.edu.ifmt.cba.ifmthub.model.dto.TagDTO;
 import br.edu.ifmt.cba.ifmthub.repositories.CategoryRepository;
 import br.edu.ifmt.cba.ifmthub.repositories.PostRepository;
@@ -263,6 +266,19 @@ public class PostService {
 			return "Added Bookmark of idPost = " + idPost + " From idUser = " + idUser + ".";
 		}
 		throw new IllegalArgumentException();
+	}
+
+	public List<PostTendencyDTO> findTendencyPosts() {
+		List<PostTendencyDTO> postTendencyDTOList = new ArrayList<>();
+		Long sevenDaysInMillis = 604800000l;
+	    LocalDateTime startDate = LocalDateTime.now().minus(sevenDaysInMillis, ChronoUnit.MILLIS);
+	    List<Long> idPostOfTop6Posts = postViewRepository.findTop6Posts(startDate);
+	    idPostOfTop6Posts.forEach(idPost -> {
+	    	Post post = postRepository.findById(idPost)
+					.orElseThrow(() -> new ResourceNotFoundException("No post present with idPost = " + idPost));
+	    	postTendencyDTOList.add(new PostTendencyDTO(post));
+	    });
+		return postTendencyDTOList;
 	}
 
 }

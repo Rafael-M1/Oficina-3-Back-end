@@ -2,7 +2,6 @@ package br.edu.ifmt.cba.ifmthub.model.dto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 
 import br.edu.ifmt.cba.ifmthub.model.User;
 
@@ -87,7 +86,6 @@ public class UserDTO {
 	@Override
 	public String toString() {
 		return "UserDTO [idUser=" + idUser + ", email=" + email + ", fullName=" + fullName + ", gender=" + gender
-				+ ", dateCreated=" + dateCreated + ", birthDate=" + birthDate + ", photo=" + Arrays.toString(photo)
-				+ "]";
+				+ ", dateCreated=" + dateCreated + ", birthDate=" + birthDate + "]";
 	}
 }
