@@ -6,6 +6,7 @@ import br.edu.ifmt.cba.ifmthub.model.Post;
 
 public class PostTendencyDTO {
 	private UserDTO author;
+	private Long idPost;
 	private String title;
 	private LocalDateTime dateCreated;
 
@@ -14,6 +15,7 @@ public class PostTendencyDTO {
 
 	public PostTendencyDTO(Post post) {
 		this.author = post.getAuthor() != null ? new UserDTO(post.getAuthor()) : null;
+		this.idPost = post.getIdPost();
 		this.title = post.getTitle();
 		this.dateCreated = post.getDateCreated();
 	}
@@ -30,15 +32,7 @@ public class PostTendencyDTO {
 		return dateCreated;
 	}
 
-	public void setAuthor(UserDTO author) {
-		this.author = author;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public void setDateCreated(LocalDateTime dateCreated) {
-		this.dateCreated = dateCreated;
+	public Long getIdPost() {
+		return idPost;
 	}
 }
