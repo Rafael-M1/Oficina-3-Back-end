@@ -148,6 +148,7 @@ public class AuthResource {
 
 	@GetMapping("/confirm")
 	public ResponseEntity<Map<String, Object>> confirmAccount(@RequestParam String token) {
+		logger.info("Trying to confirm token:" + token);
 		try {
 			String decryptedEmail = EmailConfirmationEncryption.decryptString(token);
 			Optional<User> userFoundOpt = repository.findByEmail(decryptedEmail);

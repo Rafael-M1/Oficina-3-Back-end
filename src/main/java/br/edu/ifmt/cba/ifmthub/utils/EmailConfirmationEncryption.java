@@ -1,9 +1,14 @@
 package br.edu.ifmt.cba.ifmthub.utils;
 
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -19,11 +24,16 @@ public class EmailConfirmationEncryption {
 	}
 
 	public static String decryptString(String encryptedEmail) throws Exception {
-		Cipher cipher = Cipher.getInstance("AES");
-		cipher.init(Cipher.DECRYPT_MODE, fixedSecretKey);
-		byte[] encryptedEmailBytes = Base64.getDecoder().decode(encryptedEmail.getBytes(StandardCharsets.UTF_8));
-		byte[] decryptedEmailBytes = cipher.doFinal(encryptedEmailBytes);
-		return new String(decryptedEmailBytes, StandardCharsets.UTF_8);
+		try {
+			Cipher cipher = Cipher.getInstance("AES");
+			cipher.init(Cipher.DECRYPT_MODE, fixedSecretKey);
+			byte[] encryptedEmailBytes = Base64.getUrlDecoder().decode(encryptedEmail.getBytes(StandardCharsets.UTF_8));
+			byte[] decryptedEmailBytes = cipher.doFinal(encryptedEmailBytes);
+			return new String(decryptedEmailBytes, StandardCharsets.UTF_8);
+		} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException e) {
+			e.printStackTrace();
+			throw new Exception(e);
+		}
 	}
 
 	public static byte[] encrypt(String email) throws Exception {
