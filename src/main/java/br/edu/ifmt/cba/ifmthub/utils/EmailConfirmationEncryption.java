@@ -20,7 +20,7 @@ public class EmailConfirmationEncryption {
 		Cipher cipher = Cipher.getInstance("AES");
 		cipher.init(Cipher.ENCRYPT_MODE, fixedSecretKey);
 		byte[] encryptedEmailBytes = cipher.doFinal(email.getBytes(StandardCharsets.UTF_8));
-		return Base64.getEncoder().encodeToString(encryptedEmailBytes);
+		return Base64.getUrlEncoder().encodeToString(encryptedEmailBytes);
 	}
 
 	public static String decryptString(String encryptedEmail) throws Exception {

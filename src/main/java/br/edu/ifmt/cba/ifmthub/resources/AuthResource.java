@@ -171,7 +171,7 @@ public class AuthResource {
 	private void sendConfirmationEmail(User newUser) {
 		try {
 			String confirmationToken = EmailConfirmationEncryption.encryptString(newUser.getEmail());
-			String link = hostAddress + "/auth/confirm?token="
+			String link = "https://ifmt-hub.vercel.app/confirm-email" + "?token="
 					+ URLEncoder.encode(confirmationToken, StandardCharsets.UTF_8.toString());
 			String htmlContent = "<p>Ol&aacute;,&nbsp;" + newUser.getFullName() + "!</p>" + "<p>&nbsp;</p>"
 					+ "<p>Sua conta no IFMT Hub est&aacute; quase pronta. Para ativ&aacute;-la, por favor confirme o seu endere&ccedil;o de email clicando no link abaixo.</p>"
