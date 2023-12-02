@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,10 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import br.edu.ifmt.cba.ifmthub.model.Post;
+import br.edu.ifmt.cba.ifmthub.model.dto.PostGridDTO;
 import br.edu.ifmt.cba.ifmthub.model.dto.PostInsertDTO;
 import br.edu.ifmt.cba.ifmthub.model.dto.PostResponseDTO;
 import br.edu.ifmt.cba.ifmthub.model.dto.PostResponseWithCommentsDTO;
@@ -57,14 +56,18 @@ public class PostResource {
 		return new ResponseEntity<List<PostResponseDTO>>(postList, HttpStatus.OK);
 	}
 
-	// TODO return page instead
 	@GetMapping
 	public ResponseEntity<List<PostResponseDTO>> findAll() {
 		List<PostResponseDTO> postList = this.postService.findAll();
 		return new ResponseEntity<List<PostResponseDTO>>(postList, HttpStatus.OK);
 	}
+	
+	@GetMapping("/user")
+	public ResponseEntity<List<PostGridDTO>> findAllByLoggedInUser() {
+		List<PostGridDTO> postList = this.postService.findAllByLoggedInUser();
+		return new ResponseEntity<List<PostGridDTO>>(postList, HttpStatus.OK);
+	}
 
-	// TODO return page instead
 	@GetMapping("/bookmark")
 	public ResponseEntity<List<PostResponseDTO>> findAllBookmark() {
 		List<PostResponseDTO> postList = this.postService.findAllBookmark();
@@ -93,5 +96,11 @@ public class PostResource {
 	public ResponseEntity<Map<String, Object>> toggleFavorite(@PathVariable Long idPost) {
 		String response = this.postService.toggleFavorite(idPost);
 		return new ResponseEntity<Map<String, Object>>(Map.of("message", response), HttpStatus.CREATED);
+	}
+	
+	@DeleteMapping("/{idPost}")
+	public ResponseEntity<Void> deleteByIdPost(@PathVariable Long idPost) {
+		this.postService.deleteByIdPost(idPost);
+		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
 }

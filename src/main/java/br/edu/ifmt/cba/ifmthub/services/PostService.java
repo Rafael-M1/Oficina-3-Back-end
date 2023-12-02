@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,14 +20,18 @@ import org.springframework.web.multipart.MultipartFile;
 import br.edu.ifmt.cba.ifmthub.model.Category;
 import br.edu.ifmt.cba.ifmthub.model.Post;
 import br.edu.ifmt.cba.ifmthub.model.PostView;
+import br.edu.ifmt.cba.ifmthub.model.Role;
 import br.edu.ifmt.cba.ifmthub.model.Tag;
 import br.edu.ifmt.cba.ifmthub.model.User;
+import br.edu.ifmt.cba.ifmthub.model.dto.PostGridDTO;
 import br.edu.ifmt.cba.ifmthub.model.dto.PostInsertDTO;
 import br.edu.ifmt.cba.ifmthub.model.dto.PostResponseDTO;
 import br.edu.ifmt.cba.ifmthub.model.dto.PostResponseWithCommentsDTO;
 import br.edu.ifmt.cba.ifmthub.model.dto.PostTendencyDTO;
 import br.edu.ifmt.cba.ifmthub.model.dto.TagDTO;
 import br.edu.ifmt.cba.ifmthub.repositories.CategoryRepository;
+import br.edu.ifmt.cba.ifmthub.repositories.CommentRepository;
+import br.edu.ifmt.cba.ifmthub.repositories.PostFavoriteRepository;
 import br.edu.ifmt.cba.ifmthub.repositories.PostRepository;
 import br.edu.ifmt.cba.ifmthub.repositories.PostViewRepository;
 import br.edu.ifmt.cba.ifmthub.repositories.TagRepository;
@@ -34,6 +40,9 @@ import br.edu.ifmt.cba.ifmthub.utils.LoggedInUserUtils;
 
 @Service
 public class PostService {
+	
+	private static Logger logger = LogManager.getLogger(PostService.class);
+	
 	@Autowired
 	private PostRepository postRepository;
 
@@ -45,6 +54,12 @@ public class PostService {
 	
 	@Autowired
 	private PostViewRepository postViewRepository;
+	
+	@Autowired
+	private PostFavoriteRepository postFavoriteRepository;
+	
+	@Autowired
+	private CommentRepository commentRepository;
 
 	public Post save(Post post) {
 		post.setDateCreated(LocalDateTime.now());
@@ -109,7 +124,9 @@ public class PostService {
 		post.setUrlImgPost(postInsertDTO.getUrlImgPost());
 		post.setDateCreated(LocalDateTime.now());
 		post.setStatus(postInsertDTO.isStatus());
-		return postRepository.save(post);
+		post = postRepository.save(post);
+		logger.info("Created post of id=" + post.getIdPost() + " by User of idUser=" + post.getAuthor().getIdUser());
+		return post;
 	}
 
 	public PostResponseDTO findById(Long idPost) {
@@ -279,6 +296,48 @@ public class PostService {
 	    	postTendencyDTOList.add(new PostTendencyDTO(post));
 	    });
 		return postTendencyDTOList;
+	}
+
+	public List<PostGridDTO> findAllByLoggedInUser() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null) {
+			throw new ResourceNotFoundException("User not authenticated.");
+		}
+		User user = (User) authentication.getPrincipal();
+		Long idUser = user.getIdUser();
+		for (Role userRole : user.getRoles()) {
+			if (userRole.getAuthority().equals("ROLE_ADMIN")) {
+				idUser = null;
+			}
+		}
+		return this.postRepository.findAllByLoggedInUser(idUser);
+	}
+
+	@Transactional
+	public void deleteByIdPost(Long idPost) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null) {
+			throw new ResourceNotFoundException("User not authenticated.");
+		}
+		User user = (User) authentication.getPrincipal();
+		Post post = postRepository.findById(idPost)
+				.orElseThrow(() -> new ResourceNotFoundException("No post present with idPost = " + idPost));
+		boolean isAdmin = false;
+		for (Role userRole : user.getRoles()) {
+			if (userRole.getAuthority().equals("ROLE_ADMIN")) {
+				isAdmin = true;
+			}
+		}
+		if (post.getAuthor().getFullName().equals(user.getFullName()) || isAdmin) {
+			this.commentRepository.deleteAllByIdPost(idPost);
+			this.postViewRepository.deleteAllByIdPost(idPost);
+			this.postFavoriteRepository.deleteAllByIdPost(idPost);
+			this.postRepository.deleteBookmarkByIdPost(idPost);
+			this.postRepository.deleteById(idPost);
+			logger.info("Deleted post of id=" + idPost + " by User of idUser=" + user.getIdUser());
+		} else {
+			throw new ResourceNotFoundException("Not authorized.");
+		}
 	}
 
 }

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import br.edu.ifmt.cba.ifmthub.model.Post;
+import br.edu.ifmt.cba.ifmthub.model.dto.PostGridDTO;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long>{
@@ -50,6 +51,12 @@ public interface PostRepository extends JpaRepository<Post, Long>{
 	void deleteBookmarkByIdUserByIdPost(Long idUser, Long idPost);
 	
 	@Modifying
+	@Query(value = "delete from tb_bookmark "
+			+ "WHERE tb_bookmark.id_post = :idPost ",
+			nativeQuery = true)
+	void deleteBookmarkByIdPost(Long idPost);
+	
+	@Modifying
 	@Query(value = "insert into tb_bookmark (id_user, id_post) "
 			+ "VALUES (:idUser, :idPost) ",
 			nativeQuery = true)
@@ -72,5 +79,14 @@ public interface PostRepository extends JpaRepository<Post, Long>{
 			+ "VALUES (:idUser, :idPost) ",
 			nativeQuery = true)
 	void addFavoriteByIdUserByIdPost(Long idUser, Long idPost);
+
+	@Query("SELECT new br.edu.ifmt.cba.ifmthub.model.dto.PostGridDTO("
+			+ "p"
+			+ ") "
+			+ "FROM Post p "
+			+ "WHERE p.author.idUser = :idUser OR :idUser is NULL "
+			+ "ORDER BY p.dateCreated DESC "
+			)
+	List<PostGridDTO> findAllByLoggedInUser(Long idUser);
 
 }
