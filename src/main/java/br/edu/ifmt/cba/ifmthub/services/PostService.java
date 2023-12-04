@@ -154,8 +154,19 @@ public class PostService {
 
 	@Transactional
 	public Post update(Long idPost, PostUpdateDTO postUpdateDTO) {
-		Post postSaved = postRepository.findById(postUpdateDTO.getIdPost())
-				.orElseThrow(() -> new ResourceNotFoundException("No post present with idPost = " + postUpdateDTO.getIdPost()));
+		Post postSaved = postRepository.findById(idPost)
+				.orElseThrow(() -> new ResourceNotFoundException("No post present with idPost = " + idPost));
+		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null) {
+			throw new ResourceNotFoundException("User not authenticated.");
+		}
+		User user = (User) authentication.getPrincipal();
+		boolean isAdmin = user.getAuthorities().stream().anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+		if (!postSaved.getAuthor().getIdUser().equals(user.getIdUser()) || !isAdmin) {
+			throw new ResourceNotFoundException("Not authorized.");
+		}
+		
 		//category
 		Optional<Category> categoryOpt = categoryRepository
 				.findByDescription(postUpdateDTO.getCategory().getDescription());
@@ -184,10 +195,6 @@ public class PostService {
 		postSaved.setContent(postUpdateDTO.getContent());
 		postSaved = postRepository.save(postSaved);
 		return postSaved;
-	}
-
-	public void delete(Long idPost) {
-		postRepository.deleteById(idPost);
 	}
 
 	public List<PostResponseDTO> findAllFilteredByQueryText(String query) {

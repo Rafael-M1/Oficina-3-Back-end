@@ -9,8 +9,6 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 public class PostUpdateDTO {
-	@NotNull(message = "Post's id must not be null")
-	private Long idPost;
 	@NotNull(message = "Category must not be empty")
 	@Valid
 	private CategoryDTO category;
@@ -26,10 +24,6 @@ public class PostUpdateDTO {
 	private String content;
 
 	public PostUpdateDTO() {
-	}
-
-	public Long getIdPost() {
-		return idPost;
 	}
 
 	public CategoryDTO getCategory() {
@@ -54,7 +48,7 @@ public class PostUpdateDTO {
 
 	@Override
 	public String toString() {
-		return "PostUpdateDTO [idPost=" + idPost + ", category=" + category + ", tags=" + tags + ", title=" + title
-				+ ", subtitle=" + subtitle + ", content=" + content + "]";
+		return "PostUpdateDTO [category=" + category + ", tags=" + tags + ", title=" + title + ", subtitle=" + subtitle
+				+ ", content=" + content + "]";
 	}
 }
