@@ -85,7 +85,7 @@ public class AuthResource {
 			if (user.isAccountConfirmed()) {
 				var token = tokenService.generateToken(user);
 				response.put("token", token);
-				logger.info("User Logged in: User[" + user.getEmail() + ", " + user.getFullName() + "]");
+				logger.info("User Logged in: User[id=" + user.getIdUser() + ", name=" + user.getFullName() + ", email=" + user.getEmail() + "]");
 				return ResponseEntity.ok(response);
 			} else {
 				response.put("message", "Account not confirmed");

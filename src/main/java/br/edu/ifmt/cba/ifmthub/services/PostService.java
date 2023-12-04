@@ -151,7 +151,7 @@ public class PostService {
 		}).collect(Collectors.toList());
 	}
 
-	public Post update(Post post) {
+	public Post update(Long idPost, Post post) {
 		Post postSaved = postRepository.findById(post.getIdPost())
 				.orElseThrow(() -> new ResourceNotFoundException("No post present with idPost = " + post.getIdPost()));
 		postSaved.setAuthor(post.getAuthor());
@@ -310,6 +310,7 @@ public class PostService {
 				idUser = null;
 			}
 		}
+		logger.info("Listing all posts made by User[id=" + user.getIdUser() + ", name=" + user.getFullName() + ", email=" + user.getEmail() + "]");
 		return this.postRepository.findAllByLoggedInUser(idUser);
 	}
 
