@@ -305,13 +305,17 @@ public class PostService {
 		}
 		User user = (User) authentication.getPrincipal();
 		Long idUser = user.getIdUser();
+		logger.info("idUser=" + idUser);
 		for (Role userRole : user.getRoles()) {
 			if (userRole.getAuthority().equals("ROLE_ADMIN")) {
 				idUser = null;
 			}
 		}
-		logger.info("Listing all posts made by User[id=" + user.getIdUser() + ", name=" + user.getFullName() + ", email=" + user.getEmail() + "]");
-		return this.postRepository.findAllByLoggedInUser(idUser);
+		logger.info("Listing all posts made by User[id=" 
+				+ user.getIdUser() + ", name=" + user.getFullName() + ", email=" + user.getEmail() + "]");
+		List<PostGridDTO> listPosts = this.postRepository.findAllByLoggedInUser(idUser);
+		logger.info("List Retrieved:" + listPosts.toString());
+		return listPosts;
 	}
 
 	@Transactional
