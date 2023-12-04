@@ -163,7 +163,8 @@ public class PostService {
 		}
 		User user = (User) authentication.getPrincipal();
 		boolean isAdmin = user.getAuthorities().stream().anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
-		if (!postSaved.getAuthor().getIdUser().equals(user.getIdUser()) || !isAdmin) {
+		boolean isUserTheAuthor = postSaved.getAuthor().getIdUser().equals(user.getIdUser());
+		if (isAdmin == false && isUserTheAuthor == false) {
 			throw new ResourceNotFoundException("Not authorized.");
 		}
 		
