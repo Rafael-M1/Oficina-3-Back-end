@@ -26,6 +26,7 @@ import br.edu.ifmt.cba.ifmthub.model.dto.PostInsertDTO;
 import br.edu.ifmt.cba.ifmthub.model.dto.PostResponseDTO;
 import br.edu.ifmt.cba.ifmthub.model.dto.PostResponseWithCommentsDTO;
 import br.edu.ifmt.cba.ifmthub.model.dto.PostTendencyDTO;
+import br.edu.ifmt.cba.ifmthub.model.dto.PostUpdateDTO;
 import br.edu.ifmt.cba.ifmthub.services.PostService;
 import jakarta.validation.Valid;
 
@@ -112,9 +113,9 @@ public class PostResource {
 	}
 	
 	@PutMapping("/{idPost}")
-	public ResponseEntity<Map<String, Object>> updatePost(@PathVariable Long idPost, @RequestBody Post post) {
-//		this.postService.update(idPost, post);
-//		return new ResponseEntity<Map<String, Object>>(Map.of("message", "Post updated"), HttpStatus.OK);
-		return null;
+	public ResponseEntity<PostResponseDTO> updatePost(@PathVariable Long idPost, @RequestBody PostUpdateDTO postUpdateDTO) {
+		Post postUpdated = this.postService.update(idPost, postUpdateDTO);
+		PostResponseDTO postResponse = new PostResponseDTO(postUpdated);
+		return new ResponseEntity<PostResponseDTO>(postResponse, HttpStatus.OK);
 	}
 }

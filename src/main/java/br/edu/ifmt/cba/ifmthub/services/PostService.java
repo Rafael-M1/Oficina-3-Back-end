@@ -28,6 +28,7 @@ import br.edu.ifmt.cba.ifmthub.model.dto.PostInsertDTO;
 import br.edu.ifmt.cba.ifmthub.model.dto.PostResponseDTO;
 import br.edu.ifmt.cba.ifmthub.model.dto.PostResponseWithCommentsDTO;
 import br.edu.ifmt.cba.ifmthub.model.dto.PostTendencyDTO;
+import br.edu.ifmt.cba.ifmthub.model.dto.PostUpdateDTO;
 import br.edu.ifmt.cba.ifmthub.model.dto.TagDTO;
 import br.edu.ifmt.cba.ifmthub.repositories.CategoryRepository;
 import br.edu.ifmt.cba.ifmthub.repositories.CommentRepository;
@@ -151,17 +152,37 @@ public class PostService {
 		}).collect(Collectors.toList());
 	}
 
-	public Post update(Long idPost, Post post) {
-		Post postSaved = postRepository.findById(post.getIdPost())
-				.orElseThrow(() -> new ResourceNotFoundException("No post present with idPost = " + post.getIdPost()));
-		postSaved.setAuthor(post.getAuthor());
-		postSaved.setCategory(post.getCategory());
-		postSaved.setTitle(post.getTitle());
-		postSaved.setSubTitle(post.getSubTitle());
-		postSaved.setContent(post.getContent());
-		postSaved.setUrlImgPost(post.getUrlImgPost());
-		postSaved.setStatus(post.isStatus());
-		postRepository.save(postSaved);
+	@Transactional
+	public Post update(Long idPost, PostUpdateDTO postUpdateDTO) {
+		Post postSaved = postRepository.findById(postUpdateDTO.getIdPost())
+				.orElseThrow(() -> new ResourceNotFoundException("No post present with idPost = " + postUpdateDTO.getIdPost()));
+		//category
+		Optional<Category> categoryOpt = categoryRepository
+				.findByDescription(postUpdateDTO.getCategory().getDescription());
+		if (categoryOpt.isPresent()) {
+			postSaved.setCategory(categoryOpt.get());
+		} else {
+			Category category = new Category(null, postUpdateDTO.getCategory().getDescription(), LocalDateTime.now(),
+					true);
+			category = categoryRepository.save(category);
+			postSaved.setCategory(category);
+		}
+		//tags
+		for (TagDTO tagDTO : postUpdateDTO.getTags()) {
+			Optional<Tag> tagOpt = tagRepository.findByDescription(tagDTO.getDescription());
+			if (tagOpt.isPresent()) {
+				postSaved.addTag(tagOpt.get());
+			} else {
+				Tag tag = new Tag(null, tagDTO.getDescription(), LocalDateTime.now(), true);
+				tag = tagRepository.save(tag);
+				postSaved.addTag(tag);
+			}
+		}
+		
+		postSaved.setTitle(postUpdateDTO.getTitle());
+		postSaved.setSubTitle(postUpdateDTO.getSubtitle());
+		postSaved.setContent(postUpdateDTO.getContent());
+		postSaved = postRepository.save(postSaved);
 		return postSaved;
 	}
 
@@ -305,7 +326,6 @@ public class PostService {
 		}
 		User user = (User) authentication.getPrincipal();
 		Long idUser = user.getIdUser();
-		logger.info("idUser=" + idUser);
 		for (Role userRole : user.getRoles()) {
 			if (userRole.getAuthority().equals("ROLE_ADMIN")) {
 				idUser = null;
